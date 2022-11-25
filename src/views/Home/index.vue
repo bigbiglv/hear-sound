@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  index
+  <span class="text-blue-500">1111</span>
 </template>
 
 
