@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
-import { parseQuery } from 'vue-router'
 interface IState{
   audioContext: AudioContext | null,
   mediaElement: HTMLAudioElement | null,
   bufferLength: number,
   drawId: number | null,
   analyser: AnalyserNode | null,
+  duration: number,
+  currentTime: number,
+  volume: number,
 }
 export default defineStore('audio',{
   state: (): IState => ({
@@ -14,6 +16,9 @@ export default defineStore('audio',{
     bufferLength: 0,
     drawId: null,
     analyser: null,
+    duration: 0,    // 音频的总时长
+    currentTime: 0, // 当前播放的进度
+    volume: 0,      // 音量
   }),
   actions:{
     setAudioSrc(url: string) {
@@ -43,7 +48,26 @@ export default defineStore('audio',{
       analyser.connect(gainNode)
       gainNode.connect(audioContext.destination)
 
+      // 监听事件 
+      // 触发第一帧
+      mediaElement.addEventListener('loadeddata', () => {
+        this.duration = mediaElement.duration
+      })
 
+      // 播放结束
+      mediaElement.onended = () => {
+        this.cancelDraw()
+      }
+      // 音频进度
+      mediaElement.ontimeupdate = () => {
+        this.currentTime = mediaElement.currentTime
+      }
+
+      // 音量
+      mediaElement.onvolumechange = () => {
+        this.volume = mediaElement.volume
+      }
+      
       this.analyser = analyser
       this.mediaElement = mediaElement
       this.audioContext = audioContext
@@ -58,7 +82,6 @@ export default defineStore('audio',{
       let barHeight
       this.drawId = requestAnimationFrame(() => this.draw(canvas))
       this.analyser?.getByteFrequencyData(this.dataArray)
-      console.log('draw')
       ctx?.clearRect(0 ,0, width, height)
       let canvasX = 0
       for(let i = 0; i < this.bufferLength; i++) {
