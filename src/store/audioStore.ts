@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { parseQuery } from 'vue-router'
 interface IState{
   audioContext: AudioContext | null,
   mediaElement: HTMLAudioElement | null,
@@ -19,12 +20,6 @@ export default defineStore('audio',{
       this.mediaElement!.src = url
     },
     createAudioContext() {
-      // const { audioContext, mediaElement, draw, cancelDraw } = useAudioContext()
-      // this.audioContext = audioContext
-      // this.mediaElement = mediaElement
-      // this.draw = draw
-      // this.cancelDraw = cancelDraw
-
       // 创建audio元素
       const mediaElement: HTMLAudioElement = document.createElement('audio')
       mediaElement.setAttribute('controls', 'true')
@@ -54,8 +49,8 @@ export default defineStore('audio',{
       this.audioContext = audioContext
       this.bufferLength = bufferLength
     },
+    // 开始绘制声波图
     draw(canvas: HTMLCanvasElement | null){
-      console.log('draw')
       const ctx = canvas?.getContext('2d')
       const height = canvas?.height || 0
       const width = canvas?.width || 0
@@ -78,8 +73,8 @@ export default defineStore('audio',{
         canvasX += barWidth + 2
       }
     },
-
-    cancelDraw(time: number = 500){
+    // 停止绘制声波图
+    cancelDraw(time: number = 800){
       setTimeout(() => {
         this.drawId && cancelAnimationFrame(this.drawId)
       }, time);
