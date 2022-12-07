@@ -187,7 +187,9 @@ export namespace NSongUrl {
     level: TLevel
   }
   /** 返回数据 */
-  export type TResData = {
+  export type TResData = Array<TSong> 
+  
+  export type TSong = {
     id: number,
     url: string,
     br: number,
