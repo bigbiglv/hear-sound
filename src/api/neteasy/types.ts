@@ -226,7 +226,7 @@ export namespace NSongUrl {
   }
 
   /** 码率可用参数 */
-  type TLevel =
+  export type TLevel =
     'standard' | // 标准
     'higher' | // 较高
     'exhigh' | //极高

@@ -12,7 +12,8 @@ interface IState{
   volume: number,
   playList: Array<NSearch.ISongs>,
   playIndex: number,
-  songUrl: string
+  songUrl: string,
+  level: NSongUrl.TLevel,
 }
 export default defineStore('audio',{
   state: (): IState => ({
@@ -27,6 +28,7 @@ export default defineStore('audio',{
     playList: [],   // 播放列表 歌曲信息
     playIndex: 0,   // 播放歌曲的下标
     songUrl: '',    // 当前播放歌曲的url
+    level: 'standard',    // 码率
   }),
   actions:{
     setAudioSrc(url: string) {
@@ -158,7 +160,7 @@ export default defineStore('audio',{
       const { id } = this.playList[this.playIndex] || {}
       let params: NSongUrl.TParams = { 
         id,
-        level: 'standard'
+        level: this.level,
       }
       try {
         await this.getSongUrl(params)
