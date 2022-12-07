@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import type { NSearch, NSongUrl } from '@/api/neteasy/types'
-import { SongUrl } from '@/api/neteasy/index';
+import type { NLyric, NSearch, NSongUrl } from '@/api/neteasy/types'
+import { SongUrl, Lyric } from '@/api/neteasy/index';
 interface IState{
   audioContext: AudioContext | null,
   mediaElement: HTMLAudioElement | null,
@@ -14,6 +14,7 @@ interface IState{
   playIndex: number,
   songUrl: string,
   level: NSongUrl.TLevel,
+  lyric: { lrc: string | undefined, romalrc: string | undefined }
 }
 export default defineStore('audio',{
   state: (): IState => ({
@@ -29,6 +30,10 @@ export default defineStore('audio',{
     playIndex: 0,   // 播放歌曲的下标
     songUrl: '',    // 当前播放歌曲的url
     level: 'standard',    // 码率
+    lyric: {
+      lrc: '',      // 普通歌词  
+      romalrc: '',  // 罗马音译
+    }, 
   }),
   actions:{
     setAudioSrc(url: string) {
@@ -181,6 +186,18 @@ export default defineStore('audio',{
       this.playIndex === 0 ? this.playIndex = this.playList.length : this.playIndex--
       // 根据playIndex获取当前选中的歌曲
       this.getSongUrlforIndex()
+    },
+    // 获取歌词
+    async getLyric() {
+      let id = this.playList[this.playIndex].id
+      let params: NLyric.TParams = {
+        id
+      }
+      const { result } = await Lyric(params) || {}
+      this.lyric = {
+        lrc: result?.lrc.lyric,
+        romalrc: result?.romalrc.lyric
+      }
     }
   },
   getters: {
