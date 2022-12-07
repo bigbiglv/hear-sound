@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import type { NSearch, NSongUrl } from '@/api/neteasy/types'
+import { SongUrl } from '@/api/neteasy/index';
 interface IState{
   audioContext: AudioContext | null,
   mediaElement: HTMLAudioElement | null,
@@ -8,6 +10,8 @@ interface IState{
   duration: number,
   currentTime: number,
   volume: number,
+  playList: Array<NSearch.ISongs>,
+  playIndex: number
 }
 export default defineStore('audio',{
   state: (): IState => ({
@@ -19,6 +23,8 @@ export default defineStore('audio',{
     duration: 0,    // 音频的总时长
     currentTime: 0, // 当前播放的进度
     volume: 0,      // 音量
+    playList: [],   // 播放列表 歌曲信息
+    playIndex: 0,   // 播放歌曲的下标
   }),
   actions:{
     setAudioSrc(url: string) {
@@ -108,7 +114,6 @@ export default defineStore('audio',{
         this.drawId && cancelAnimationFrame(this.drawId)
       }, time);
     },
-
     // 播放
     play(){
       return new Promise(async (res, rej) => {
@@ -122,14 +127,19 @@ export default defineStore('audio',{
         res('success')
       })
     },
-
     // 暂停
     pause(){
       if (this.mediaElement?.paused) return 
       this.mediaElement?.pause()
       // 停止绘制
       this.cancelDraw?.()
-    }
+    },
+    // 获取播放url
+    async getSongUrl(params: NSongUrl.TParams){
+      const { result } = await SongUrl(params) || {}
+      // 设置audio的src
+      result?.url && this.setAudioSrc(result.url)
+    },
   },
   getters: {
     dataArray(): Uint8Array {
