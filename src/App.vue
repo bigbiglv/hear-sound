@@ -8,28 +8,17 @@ onMounted(() => {
   store.createAudioContext()
   store.setAudioSrc('http://127.0.0.1:5501/pink.flac')
 })
-async function play(){
-  // 如果audioContext没有开启 先开启
-  if ( store.audioContext?.state !== 'running') {
-    await store.audioContext?.resume()
-  }
-  // 非暂停状态不触发draw事件 
-  if (!store.mediaElement?.paused) return 
-  store.mediaElement?.play()
-  store.draw?.(canvas.value, 128)
-}
-function pause(){
-  if (store.mediaElement?.paused) return 
-  store.mediaElement?.pause()
-  // 停止绘制
-  store.cancelDraw?.()
+function play(){
+  store.play().then(()=>{
+    store.draw?.(canvas.value, 128)
+  })
 }
 </script>
 
 <template>
   <RouterView />
   <div @click="play">play</div>
-  <div @click="pause">pause</div>
+  <div @click="store.pause">pause</div>
   <canvas ref="canvas"></canvas>
 </template>
 

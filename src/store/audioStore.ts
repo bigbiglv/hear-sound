@@ -108,6 +108,28 @@ export default defineStore('audio',{
         this.drawId && cancelAnimationFrame(this.drawId)
       }, time);
     },
+
+    // 播放
+    play(){
+      return new Promise(async (res, rej) => {
+        // 如果audioContext没有开启 先开启
+        if ( this.audioContext?.state !== 'running') {
+          await this.audioContext?.resume()
+        }
+        // 非暂停状态不触发play事件 防止.then中的draw事件多次触发
+        if (!this.mediaElement?.paused) return 
+        this.mediaElement?.play()
+        res('success')
+      })
+    },
+
+    // 暂停
+    pause(){
+      if (this.mediaElement?.paused) return 
+      this.mediaElement?.pause()
+      // 停止绘制
+      this.cancelDraw?.()
+    }
   },
   getters: {
     dataArray(): Uint8Array {
