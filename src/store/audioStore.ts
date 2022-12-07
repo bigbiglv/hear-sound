@@ -39,8 +39,8 @@ export default defineStore('audio',{
       const analyser: AnalyserNode = new AnalyserNode(audioContext)
       const gainNode = new GainNode(audioContext) //创建一个新的gain节点 音量调节
 
-      // 设置可视化柱体数量
-      analyser.fftSize = 128
+      // 设置默认可视化柱体数量
+      analyser.fftSize = 512
       const bufferLength: number = analyser.frequencyBinCount
       
       // 连接节点
@@ -74,13 +74,19 @@ export default defineStore('audio',{
       this.bufferLength = bufferLength
     },
     // 开始绘制声波图
-    draw(canvas: HTMLCanvasElement | null){
+    draw(canvas: HTMLCanvasElement | null, fftSize: number = 512){
       const ctx = canvas?.getContext('2d')
       const height = canvas?.height || 0
       const width = canvas?.width || 0
       const barWidth = width / this.bufferLength * 1.5
       let barHeight
-      this.drawId = requestAnimationFrame(() => this.draw(canvas))
+
+      // 更新可视化柱体数量
+      console.log('fftSize', fftSize)
+      this.analyser!.fftSize = fftSize
+      this.bufferLength = this.analyser!.frequencyBinCount
+
+      this.drawId = requestAnimationFrame(() => this.draw(canvas, fftSize))
       this.analyser?.getByteFrequencyData(this.dataArray)
       ctx?.clearRect(0 ,0, width, height)
       let canvasX = 0

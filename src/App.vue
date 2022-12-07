@@ -16,7 +16,7 @@ async function play(){
   // 非暂停状态不触发draw事件 
   if (!store.mediaElement?.paused) return 
   store.mediaElement?.play()
-  store.draw?.(canvas.value)
+  store.draw?.(canvas.value, 128)
 }
 function pause(){
   if (store.mediaElement?.paused) return 
