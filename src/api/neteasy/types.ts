@@ -1,15 +1,13 @@
-import { type } from "os"
-
 /** serch接口的命名空间 */
 export namespace NSearch {
-  /** search接口请求参数 */
+  /** 请求参数 */
   export type TParams = {
     keywords: string
     type?: types
     limit?: number
     offset?: number
   }
-  /** search 接口返回参数 */
+  /** 返回数据 */
   export type TResData = {
     // type 1 单曲
     songs?: ISongs[]
@@ -177,4 +175,61 @@ export namespace NSearch {
     moreText: string,
     resourceIds: [],
   }
+}
+
+/** SongUrl 接口的命名空间 */
+export namespace NSongUrl {
+  /** 请求参数 */
+  export type TParams = {
+    id: number,
+    level: TLevel
+  }
+  /** 返回数据 */
+  export type TResData = {
+    id: number,
+    url: string,
+    br: number,
+    size: number,
+    md5: string,
+    code: number,
+    expi: number,
+    type: string,
+    gain: number,
+    peak: number,
+    fee: number,
+    uf: any,
+    payed: number,
+    flag: number,
+    canExtend: boolean,
+    freeTrialInfo: {
+        start: number,
+        end: number
+    },
+    level: string,
+    encodeType: string,
+    freeTrialPrivilege: {
+        resConsumable: boolean,
+        userConsumable: boolean,
+        listenType: any
+    },
+    freeTimeTrialPrivilege: {
+        resConsumable: boolean,
+        userConsumable: boolean,
+        type: number,
+        remainTime: number
+    },
+    urlSource: number,
+    rightSource: number,
+    podcastCtrp: any,
+    effectTypes: any,
+    time: number
+  }
+
+  /** 码率可用参数 */
+  type TLevel =
+    'standard' | // 标准
+    'higher' | // 较高
+    'exhigh' | //极高
+    'lossless'| //无损
+    'hires' //Hi-Res
 }
