@@ -15,7 +15,9 @@ export namespace NSearch {
     song?: ISong[]
     album?: IAlbum[]
     artist?: IArtist[]
-    playList?: IPlayList[]
+    playList?: IPlayList[],
+    hasMore: boolean,
+    songCount: number
   }
   export type types =
     1 |   //单曲 
