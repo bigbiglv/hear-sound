@@ -20,10 +20,10 @@ export default defineConfig({
     port: 8080,  // 端口号，一般情况下为8080
     proxy: { 
       // 要梯子
-      "/api/wy": { 
+      "/api/netease": { 
         target: "https://netease-cloud-music-api-nu-mocha.vercel.app", 
         changeOrigin: true, 
-        rewrite: (path) => path.replace(/^\/api\/wy/, "")
+        rewrite: (path) => path.replace(/^\/api\/netease/, "")
       },
       // "/api": {
       //   target: "http://localhost:5000",
