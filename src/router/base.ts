@@ -12,6 +12,15 @@ export const base: Array<RouteRecordRaw> = [
     component: Home
   },
   {
+    path:'/search',
+    name: 'Search',
+    meta: {
+      isLogin: false,
+      keepAlive: false,
+    },
+    component: () => import('@/views/Search/index.vue')
+  },
+  {
     path:'/:catchAll(.*)',
     name: 'NotFound',
     meta: {
