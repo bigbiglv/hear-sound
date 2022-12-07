@@ -82,7 +82,7 @@ export default defineStore('audio',{
       this.bufferLength = bufferLength
     },
     // 开始绘制声波图
-    draw(canvas: HTMLCanvasElement | null, fftSize: number = 512){
+    draw(canvas: HTMLCanvasElement | null, fftSize: number = 512) {
       const ctx = canvas?.getContext('2d')
       const height = canvas?.height || 0
       const width = canvas?.width || 0
@@ -111,13 +111,13 @@ export default defineStore('audio',{
       }
     },
     // 停止绘制声波图
-    cancelDraw(time: number = 800){
+    cancelDraw(time: number = 800) {
       setTimeout(() => {
         this.drawId && cancelAnimationFrame(this.drawId)
       }, time);
     },
     // 播放
-    play(){
+    play() {
       return new Promise(async (res, rej) => {
         // 如果audioContext没有开启 先开启
         if ( this.audioContext?.state !== 'running') {
@@ -128,23 +128,16 @@ export default defineStore('audio',{
         // audio没有url的时候获取url
         if (!this.songUrl && this.playList.length) {
           // 根据playIndex获取当前选中的歌曲
-          const { id } = this.playList[this.playIndex] || {}
-          let params: NSongUrl.TParams = { 
-            id,
-            level: 'standard'
-          }
-          try {
-            await this.getSongUrl(params)
-          } catch (error) {
+          this.getSongUrlforIndex().catch(() => {
             rej('getSongUrl获取url失败')
-          }
+          })
         }
         this.mediaElement?.play()
         res('success')
       })
     },
     // 暂停
-    pause(){
+    pause() {
       if (this.mediaElement?.paused) return 
       this.mediaElement?.pause()
       // 停止绘制
@@ -159,6 +152,34 @@ export default defineStore('audio',{
         this.songUrl = result.url
       }
     },
+    // 根据playIndex获取songUrl
+    async getSongUrlforIndex() {
+      if(!this.playList.length) return
+      const { id } = this.playList[this.playIndex] || {}
+      let params: NSongUrl.TParams = { 
+        id,
+        level: 'standard'
+      }
+      try {
+        await this.getSongUrl(params)
+      } catch (error) {
+        // getSongUrl获取url失败
+      }
+    },
+    // 下一曲
+    async next() {
+      if(!this.playList.length) return
+      this.playIndex === this.playList.length ? this.playIndex = 0 : this.playIndex++
+      // 根据playIndex获取当前选中的歌曲
+      this.getSongUrlforIndex()
+    },
+    // 上一曲
+    prev() {
+      if(!this.playList.length) return
+      this.playIndex === 0 ? this.playIndex = this.playList.length : this.playIndex--
+      // 根据playIndex获取当前选中的歌曲
+      this.getSongUrlforIndex()
+    }
   },
   getters: {
     dataArray(): Uint8Array {
