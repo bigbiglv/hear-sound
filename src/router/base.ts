@@ -1,5 +1,6 @@
 import { RouteRecordRaw } from 'vue-router'
-import home from '@/views/Home/index.vue'
+import Home from '@/views/Home/index.vue'
+import Error from '@/views/Error/index.vue'
 export const base: Array<RouteRecordRaw> = [
   {
     path:'/',
@@ -8,6 +9,15 @@ export const base: Array<RouteRecordRaw> = [
       isLogin: false,
       keepAlive: true,
     },
-    component:home
-  }
+    component: Home
+  },
+  {
+    path:'/:catchAll(.*)',
+    name: 'NotFound',
+    meta: {
+      isLogin: false,
+      keepAlive: false,
+    },
+    component: Error
+  },
 ]
