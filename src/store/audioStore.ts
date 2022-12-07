@@ -38,6 +38,7 @@ export default defineStore('audio',{
   actions:{
     setAudioSrc(url: string) {
       this.mediaElement!.src = url
+      this.songUrl = url
     },
     createAudioContext() {
       // 创建audio元素
@@ -152,12 +153,10 @@ export default defineStore('audio',{
     },
     // 获取播放url
     async getSongUrl(params: NSongUrl.TParams){
-      const { result } = await SongUrl(params) || {}
+      const { data } = await SongUrl(params) || {}
       // 设置audio的src
-      if(result?.url){
-        this.setAudioSrc(result.url)
-        this.songUrl = result.url
-      }
+      let url = data?.[0]?.url
+      url && this.setAudioSrc(url)
     },
     // 根据playIndex获取songUrl
     async getSongUrlforIndex() {

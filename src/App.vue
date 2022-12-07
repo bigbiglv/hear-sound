@@ -6,7 +6,6 @@ const canvas = ref<HTMLCanvasElement | null>(null)
 onMounted(() => {
   // 创建audio web api
   store.createAudioContext()
-  store.setAudioSrc('http://127.0.0.1:5501/pink.flac')
 })
 function play(){
   store.play().then(()=>{
