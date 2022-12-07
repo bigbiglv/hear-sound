@@ -191,7 +191,6 @@ export namespace NSongUrl {
     br: number,
     size: number,
     md5: string,
-    code: number,
     expi: number,
     type: string,
     gain: number,
@@ -232,4 +231,42 @@ export namespace NSongUrl {
     'exhigh' | //极高
     'lossless'| //无损
     'hires' //Hi-Res
+}
+
+/** Lyric 接口的命名空间 */
+export namespace NLyric {
+  /** 请求参数 */
+  export type TParams = {
+    id: number,
+  }
+  /** 返回数据 */
+  export type TResData = {
+    sgc: boolean,
+    sfy: boolean,
+    qfy: boolean,
+    lyricUser: {
+      id: number,
+      status: number,
+      demand: number,
+      userid: number,
+      nickname: string,
+      uptime: number
+    },
+    lrc: {
+      version: number,
+      lyric: string 
+    },
+    klyric: {
+      version: number,
+      lyric: string
+    },
+    tlyric: {
+      version: number,
+      lyric: string
+    },
+    romalrc: {
+      version: number,
+      lyric: string 
+    },
+  }
 }
