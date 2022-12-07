@@ -1,16 +1,16 @@
 import { type } from "os"
 
 /** serch接口的命名空间 */
-export namespace Nsearch {
+export namespace NSearch {
   /** search接口请求参数 */
-  export type IParams = {
+  export type TParams = {
     keywords: string
     type?: types
     limit?: number
     offset?: number
   }
   /** search 接口返回参数 */
-  export type IResData = {
+  export type TResData = {
     // type 1 单曲
     songs?: ISongs[]
     // type 1018 综合
@@ -32,7 +32,7 @@ export namespace Nsearch {
     1018 | //综合
     2000 //声音
   /** 单曲返回的类型 */
-  export interface ISongs {
+  export type ISongs = {
     id: number
     name: string
     artists: IArtists[]
