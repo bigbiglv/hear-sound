@@ -13,5 +13,23 @@ export default defineConfig({
     alias: {
       '@': join(__dirname, 'src')
     }
-  }
+  },
+  server: {			
+    // open: true,
+    host: '0.0.0.0',	// 本机的局域网IP
+    port: 8080,  // 端口号，一般情况下为8080
+    proxy: { 
+      // 要梯子
+      "/api/wy": { 
+        target: "https://netease-cloud-music-api-nu-mocha.vercel.app", 
+        changeOrigin: true, 
+        rewrite: (path) => path.replace(/^\/api\/wy/, "")
+      },
+      // "/api": {
+      //   target: "http://localhost:5000",
+      //   changeOrigin: true,
+      //   rewrite: (path) => path.replace(/^\/api/, "")
+      // }
+    }
+  },
 })
