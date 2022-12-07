@@ -11,7 +11,8 @@ interface IState{
   currentTime: number,
   volume: number,
   playList: Array<NSearch.ISongs>,
-  playIndex: number
+  playIndex: number,
+  songUrl: string
 }
 export default defineStore('audio',{
   state: (): IState => ({
@@ -25,6 +26,7 @@ export default defineStore('audio',{
     volume: 0,      // 音量
     playList: [],   // 播放列表 歌曲信息
     playIndex: 0,   // 播放歌曲的下标
+    songUrl: '',    // 当前播放歌曲的url
   }),
   actions:{
     setAudioSrc(url: string) {
@@ -123,6 +125,20 @@ export default defineStore('audio',{
         }
         // 非暂停状态不触发play事件 防止.then中的draw事件多次触发
         if (!this.mediaElement?.paused) return 
+        // audio没有url的时候获取url
+        if (!this.songUrl && this.playList.length) {
+          // 根据playIndex获取当前选中的歌曲
+          const { id } = this.playList[this.playIndex] || {}
+          let params: NSongUrl.TParams = { 
+            id,
+            level: 'standard'
+          }
+          try {
+            await this.getSongUrl(params)
+          } catch (error) {
+            rej('getSongUrl获取url失败')
+          }
+        }
         this.mediaElement?.play()
         res('success')
       })
@@ -138,7 +154,10 @@ export default defineStore('audio',{
     async getSongUrl(params: NSongUrl.TParams){
       const { result } = await SongUrl(params) || {}
       // 设置audio的src
-      result?.url && this.setAudioSrc(result.url)
+      if(result?.url){
+        this.setAudioSrc(result.url)
+        this.songUrl = result.url
+      }
     },
   },
   getters: {
