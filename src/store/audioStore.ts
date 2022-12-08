@@ -49,6 +49,7 @@ export default defineStore('audio',{
       const mediaElement: HTMLAudioElement = document.createElement('audio')
       mediaElement.setAttribute('controls', 'true')
       mediaElement.setAttribute('crossorigin', 'anonymous')
+      mediaElement.setAttribute('preload', 'auto')
       // 添加audio元素
       document.getElementById('app')?.appendChild(mediaElement)
 
