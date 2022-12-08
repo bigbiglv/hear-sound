@@ -119,6 +119,10 @@ export default defineStore('audio',{
     setMuted(muted: boolean) {
       this.mediaElement!.muted = muted
     },
+    /** 设置当前播放进度 */
+    setCurrentTime(currentTime: number) {
+      this.mediaElement!.currentTime = currentTime
+    },
     /** 开始绘制声波图 */
     draw(canvas: HTMLCanvasElement | null, fftSize: number = 512) {
       const ctx = canvas?.getContext('2d')
