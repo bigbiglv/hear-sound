@@ -89,6 +89,10 @@ export default defineStore('audio',{
       this.audioContext = audioContext
       this.bufferLength = bufferLength
     },
+    /** 设置音量 */
+    setVolume(volume: number) {
+      this.mediaElement!.volume = volume
+    },
     /** 开始绘制声波图 */
     draw(canvas: HTMLCanvasElement | null, fftSize: number = 512) {
       const ctx = canvas?.getContext('2d')
