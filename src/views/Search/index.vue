@@ -4,15 +4,14 @@ import audioStore from '@/store/audioStore';
 import { NSearch } from '@/api/neteasy/types';
 import { Search } from '@/api/neteasy';
 const store = audioStore()
-const keywords = ref<string>('')
+const keywords = ref<string>('赛博朋克')
 const songList = ref<Array<NSearch.ISongs> | undefined>([])
 async function search() {
   const { result } = await Search({keywords: keywords.value}) || {}
   songList.value = result?.songs
 }
 function addPlay(song: NSearch.ISongs) {
-  store.playList.push(song)
-  store.play()
+  store.addSong(song, true)
 }
 </script>
 
