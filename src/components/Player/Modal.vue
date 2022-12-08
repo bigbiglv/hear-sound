@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue' 
+import { computed } from 'vue'
+import Tool from '@/components/Player/Tool.vue' 
 import appStore from '@/store/appStore'
 const store = appStore()
 enum Modal {
@@ -14,8 +15,8 @@ const ModalClass = computed(() => {
 
 <template>
   <!-- 三个模式: 全不显示; 露出90px; 全遮挡 -->
-  <div class="w-screen fixed bg-red-300 rounded-t-lg transition-all" :class="ModalClass">
-    
+  <div class="w-screen fixed bg-red-300 rounded-t-2xl transition-all duration-150" :class="ModalClass">
+    <Tool />
   </div>
 </template>
 
