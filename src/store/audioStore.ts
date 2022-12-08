@@ -176,14 +176,14 @@ export default defineStore('audio',{
     /** 下一曲 */
     async next() {
       if(!this.playList.length) return
-      this.playIndex === this.playList.length ? this.playIndex = 0 : this.playIndex++
+      this.playIndex === this.playList.length - 1 ? this.playIndex = 0 : this.playIndex++
       // 根据playIndex获取当前选中的歌曲
       this.getSongUrlforIndex()
     },
     /** 上一曲 */
     prev() {
       if(!this.playList.length) return
-      this.playIndex === 0 ? this.playIndex = this.playList.length : this.playIndex--
+      this.playIndex === 0 ? this.playIndex = this.playList.length - 1 : this.playIndex--
       // 根据playIndex获取当前选中的歌曲
       this.getSongUrlforIndex()
     },
