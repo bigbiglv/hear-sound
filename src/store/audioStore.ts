@@ -10,6 +10,7 @@ interface IState{
   duration: number,
   currentTime: number,
   volume: number,
+  loop: boolean,
   playList: Array<NSearch.ISongs>,
   playIndex: number,
   songUrl: string,
@@ -26,6 +27,7 @@ export default defineStore('audio',{
     duration: 0,    // 音频的总时长
     currentTime: 0, // 当前播放的进度
     volume: 0,      // 音量
+    loop: false,
     playList: [],   // 播放列表 歌曲信息
     playIndex: 0,   // 播放歌曲的下标
     songUrl: '',    // 当前播放歌曲的url
@@ -92,6 +94,10 @@ export default defineStore('audio',{
     /** 设置音量 */
     setVolume(volume: number) {
       this.mediaElement!.volume = volume
+    },
+    /** 循环单曲 */
+    setLoopSong(isLoop: boolean) {
+      this.mediaElement!.loop = isLoop
     },
     /** 开始绘制声波图 */
     draw(canvas: HTMLCanvasElement | null, fftSize: number = 512) {
