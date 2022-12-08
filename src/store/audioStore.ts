@@ -89,7 +89,7 @@ export default defineStore('audio',{
       this.audioContext = audioContext
       this.bufferLength = bufferLength
     },
-    // 开始绘制声波图
+    /** 开始绘制声波图 */
     draw(canvas: HTMLCanvasElement | null, fftSize: number = 512) {
       const ctx = canvas?.getContext('2d')
       const height = canvas?.height || 0
@@ -118,13 +118,13 @@ export default defineStore('audio',{
         canvasX += barWidth + 2
       }
     },
-    // 停止绘制声波图
+    /** 停止绘制声波图 */
     cancelDraw(time: number = 800) {
       setTimeout(() => {
         this.drawId && cancelAnimationFrame(this.drawId)
       }, time);
     },
-    // 播放
+    /** 播放 */
     play() {
       return new Promise(async (res, rej) => {
         // 如果audioContext没有开启 先开启
@@ -133,7 +133,8 @@ export default defineStore('audio',{
         }
         // 非暂停状态不触发play事件 防止.then中的draw事件多次触发
         if (!this.mediaElement?.paused) return 
-        // audio没有url的时候获取url
+        // 有播放列表但 audio没有url的时候获取当前playIndex下的url
+        // 用于有列表 首次触发播放事件
         if (!this.songUrl && this.playList.length) {
           // 根据playIndex获取当前选中的歌曲
           this.getSongUrlforIndex().catch(() => {
@@ -144,21 +145,21 @@ export default defineStore('audio',{
         res('success')
       })
     },
-    // 暂停
+    /** 暂停 */
     pause() {
       if (this.mediaElement?.paused) return 
       this.mediaElement?.pause()
       // 停止绘制
       this.cancelDraw?.()
     },
-    // 获取播放url
+    /** 获取播放url */
     async getSongUrl(params: NSongUrl.TParams){
       const { data } = await SongUrl(params) || {}
       // 设置audio的src
       let url = data?.[0]?.url
       url && this.setAudioSrc(url)
     },
-    // 根据playIndex获取songUrl
+    /** 根据playIndex获取songUrl */
     async getSongUrlforIndex() {
       if(!this.playList.length) return
       const { id } = this.playList[this.playIndex] || {}
@@ -172,21 +173,21 @@ export default defineStore('audio',{
         // getSongUrl获取url失败
       }
     },
-    // 下一曲
+    /** 下一曲 */
     async next() {
       if(!this.playList.length) return
       this.playIndex === this.playList.length ? this.playIndex = 0 : this.playIndex++
       // 根据playIndex获取当前选中的歌曲
       this.getSongUrlforIndex()
     },
-    // 上一曲
+    /** 上一曲 */
     prev() {
       if(!this.playList.length) return
       this.playIndex === 0 ? this.playIndex = this.playList.length : this.playIndex--
       // 根据playIndex获取当前选中的歌曲
       this.getSongUrlforIndex()
     },
-    // 获取歌词
+    /** 获取歌词 */
     async getLyric() {
       let id = this.playList[this.playIndex].id
       let params: NLyric.TParams = {
@@ -197,7 +198,32 @@ export default defineStore('audio',{
         lrc: result?.lrc.lyric,
         romalrc: result?.romalrc.lyric
       }
-    }
+    },
+    /** 
+     * 插入单曲播放
+     * @param song: 传入的单曲
+     * @param isPlay: 插入后是否播放
+    */
+    async addSong(song: NSearch.ISongs, isPlay: boolean = false) {
+      // 插入前判断是否存在 
+      const exist = this.playList.findIndex( s => s.id === song.id )
+      // 当前播放的就是添加的歌曲 直接return
+      if( this.playList.length && this.playList[this.playIndex].id === song.id) return
+      // 存在就删除旧的插入到当前播放的位置
+      if (exist != -1) this.playList.splice(exist, 1)
+      // 插入到当前播放位置的后面
+      this.playList.splice(this.playIndex, 0, song)
+      await this.getSongUrlforIndex()
+      isPlay && this.play()
+    },
+    /** 
+     * 替换整个播放列表
+    */
+    addSongList(songs: Array<NSearch.ISongs>) {
+      this.playList.length = 0
+      this.playList = songs
+      this.playIndex = 0 // 从头开始 
+    },
   },
   getters: {
     dataArray(): Uint8Array {
