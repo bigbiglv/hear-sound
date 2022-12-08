@@ -78,6 +78,8 @@ export default defineStore('audio',{
       // 播放结束
       mediaElement.onended = () => {
         this.cancelDraw()
+        // 触发下一曲
+        this.playList.length > 1 && this.next()
       }
       // 音频进度
       mediaElement.ontimeupdate = () => {
