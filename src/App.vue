@@ -16,8 +16,11 @@ function play(){
 
 <template>
   <RouterView />
-  <div @click="play">play</div>
-  <div @click="store.pause">pause</div>
+  <div @click="play">播放</div>
+  <div @click="store.pause">暂停</div>
+  <div @click="store.prev">上一曲</div>
+  <div @click="store.next">下一曲</div>
+  <div @click="store.setCurrentTime(50)">50</div>
   <canvas ref="canvas"></canvas>
 </template>
 
