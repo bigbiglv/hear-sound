@@ -196,7 +196,8 @@ export default defineStore('audio',{
     /** 根据playIndex获取songUrl */
     async getSongUrlforIndex() {
       if(!this.playList.length) return
-      const { id } = this.playList[this.playIndex] || {}
+      const id = this.playSong?.id
+      if(!id) return
       let params: NSongUrl.TParams = { 
         id,
         level: this.level,
@@ -223,7 +224,8 @@ export default defineStore('audio',{
     },
     /** 获取歌词 */
     async getLyric() {
-      let id = this.playList[this.playIndex].id
+      let id = this.playSong?.id
+      if(!id) return
       let params: NLyric.TParams = {
         id
       }
@@ -242,7 +244,7 @@ export default defineStore('audio',{
       // 插入前判断是否存在 
       const exist = this.playList.findIndex( s => s.id === song.id )
       // 当前播放的就是添加的歌曲 直接return
-      if( this.playList.length && this.playList[this.playIndex].id === song.id) return
+      if( this.playSong?.id === song.id) return
       // 存在就删除旧的插入到当前播放的位置
       if (exist != -1) this.playList.splice(exist, 1)
       // 插入到当前播放位置的后面
@@ -262,6 +264,9 @@ export default defineStore('audio',{
   getters: {
     dataArray(): Uint8Array {
       return new Uint8Array(this.bufferLength)
-    }
+    },
+    playSong: (state): NSearch.ISongs | undefined => {
+      return state.playList.length ? state.playList[state.playIndex] : undefined
+    },
   }
 })
