@@ -12,6 +12,7 @@ interface IState{
   volume: number,
   loop: boolean,
   muted: boolean,
+  waiting: boolean,
   playList: Array<NSearch.ISongs>,
   playIndex: number,
   songUrl: string,
@@ -30,6 +31,7 @@ export default defineStore('audio',{
     volume: 0,      // 音量
     loop: false,    // 单曲循环
     muted: false,   // 静音
+    waiting: false,  // 加载中
     playList: [],   // 播放列表 歌曲信息
     playIndex: 0,   // 播放歌曲的下标
     songUrl: '',    // 当前播放歌曲的url
@@ -90,7 +92,16 @@ export default defineStore('audio',{
       mediaElement.onvolumechange = () => {
         this.volume = mediaElement.volume
       }
-      
+
+      // 音频缺少数据加载中
+      mediaElement.onwaiting  = () => {
+        this.waiting = true
+      }
+      // 加载完成开始播放
+      mediaElement.onplaying  = () => {
+        this.waiting = false
+      }
+
       this.analyser = analyser
       this.mediaElement = mediaElement
       this.audioContext = audioContext
