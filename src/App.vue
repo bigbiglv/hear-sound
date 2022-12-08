@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/Player/Modal.vue';
 import audioStore from '@/store/audioStore';
 import { onMounted, ref } from 'vue'
 const store = audioStore()
@@ -16,6 +17,7 @@ function play(){
 
 <template>
   <RouterView />
+  <Modal />
   <div @click="play">播放</div>
   <div @click="store.pause">暂停</div>
   <div @click="store.prev">上一曲</div>
