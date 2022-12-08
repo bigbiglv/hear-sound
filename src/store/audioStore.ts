@@ -7,6 +7,7 @@ interface IState{
   bufferLength: number,
   drawId: number | null,
   analyser: AnalyserNode | null,
+  isPlay: boolean,
   duration: number,
   currentTime: number,
   volume: number,
@@ -26,6 +27,7 @@ export default defineStore('audio',{
     bufferLength: 0,
     drawId: null,
     analyser: null,
+    isPlay: false,
     duration: 0,    // 音频的总时长
     currentTime: 0, // 当前播放的进度
     volume: 0,      // 音量
@@ -176,6 +178,7 @@ export default defineStore('audio',{
           })
         }
         this.mediaElement?.play()
+        this.isPlay = true
         res('success')
       })
     },
@@ -183,6 +186,7 @@ export default defineStore('audio',{
     pause() {
       if (this.mediaElement?.paused) return 
       this.mediaElement?.pause()
+      this.isPlay = false
       // 停止绘制
       this.cancelDraw?.()
     },
