@@ -1,5 +1,6 @@
 <script setup lang="ts">
-
+import audioStore from '@/store/audioStore'
+const store = audioStore()
 </script>
 
 <template>
@@ -9,13 +10,17 @@
         <img src="" alt="封面">
       </div>
       <div>
-        <p>名字</p>
-        <p>名字</p>
+        <p>{{ store.playSong?.name }}</p>
+        <p>
+          <span v-for="artist in store.playSong?.artists" :key="artist.id"> {{ artist.name }} </span>
+        </p>
       </div>
     </div>
     <div class="flex">
-      <button>暂停</button>
-      <button>下一曲</button>
+      <button @click="store.isPlay ? store.pause() : store.play()">
+        {{ store.isPlay ? '暂停' : '播放' }}
+      </button>
+      <button @click="store.next()">下一曲</button>
     </div>
   </div>
 </template>
