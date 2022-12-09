@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Modal from '@/components/Player/Modal.vue';
+import Modal from '@/components/Modal.vue';
 import audioStore from '@/store/audioStore';
 import { onMounted, ref } from 'vue'
 const store = audioStore()
