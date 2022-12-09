@@ -250,7 +250,7 @@ export default defineStore('audio',{
         lrc: result?.lrc.lyric,
         romalrc: result?.romalrc.lyric
       }
-      console.log('lyric', this.lyric)
+      console.log('lyric', this.lyric.lrc?.split('\n'))
     },
     /** 
      * 插入单曲播放
