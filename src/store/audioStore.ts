@@ -48,16 +48,21 @@ export default defineStore('audio',{
       this.mediaElement!.src = url
       this.songUrl = url
     },
-    createAudioContext() {
+    createAudioElement() {
       // 创建audio元素
       const mediaElement: HTMLAudioElement = document.createElement('audio')
       // mediaElement.setAttribute('controls', 'true')
       mediaElement.setAttribute('crossorigin', 'anonymous')
       mediaElement.setAttribute('preload', 'auto')
+      mediaElement.setAttribute('id', 'mediaElement')
       // 添加audio元素
       document.getElementById('app')?.appendChild(mediaElement)
-
-      // // 创建音频上下文
+      return mediaElement
+    },
+    createAudioContext() {
+      // 获取创建的 mediaElement
+      const mediaElement = this.createAudioElement()
+      // 创建音频上下文
       const audioContext: AudioContext = new AudioContext()
       // 创建音频源
       const source: MediaElementAudioSourceNode = new MediaElementAudioSourceNode(audioContext, { mediaElement })
