@@ -13,7 +13,7 @@ const percentClass = computed(() => {
 <template>
   <div class="px-4 relative flex justify-between items-center cursor-pointer box-border z-10">
     <div class="flex">
-      <div class="mr-2 rounded-full overflow-hidden" @click="storeApp.modal = 'occupy'">
+      <div class="mr-2 rounded-full overflow-hidden" @click="storeApp.setModal('occupy')">
         <img src="" alt="封面">
       </div>
       <div>
