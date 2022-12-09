@@ -16,6 +16,14 @@ export default defineStore('app',{
       if (modal !== 'hidden' && !audioStore().playSong?.hasOwnProperty('id')) {
         return
       }
+      // 显示状态下 如果传入的参数和当前的值一样的话 改为另一种显示模式
+      if (modal !== 'hidden' && modal === this.modal) {
+        enum EModal {
+          'normal' = 'occupy',
+          'occupy' = 'normal'
+        }
+        return this.modal = EModal[modal]
+      }
       this.modal = modal
     },
   }
