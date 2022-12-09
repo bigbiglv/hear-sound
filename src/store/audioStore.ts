@@ -242,11 +242,15 @@ export default defineStore('audio',{
       let params: NLyric.TParams = {
         id
       }
-      const { result } = await Lyric(params) || {}
+      /**
+      * 这里网易云的api 没有按格式将数据返回在result 或者 data中
+      */
+      const result = await Lyric(params) as any as NLyric.TResData
       this.lyric = {
         lrc: result?.lrc.lyric,
         romalrc: result?.romalrc.lyric
       }
+      console.log('lyric', this.lyric)
     },
     /** 
      * 插入单曲播放
