@@ -86,7 +86,10 @@ export default defineStore('audio',{
 
       // 播放结束
       mediaElement.onended = () => {
+        // 停止绘制音频图
         this.cancelDraw()
+        // 如果播放列表只有一首歌 播放完毕直接暂停
+        this.playList.length === 1 && (this.isPlay = false)
         // 触发下一曲
         this.playList.length > 1 && this.next()
       }
