@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import audioStore from '@/store/audioStore'
+import appStore from '@/store/appStore'
 const store = audioStore()
+const storeApp = appStore()
 const percentClass = computed(() => {
   let result = (store.currentTime / store.duration) * 100
   return `width: ${result ? result.toFixed(0) : 0 }%`
-}) 
+})
 </script>
 
 <template>
   <div class="px-4 relative flex justify-between items-center cursor-pointer box-border z-10">
     <div class="flex">
-      <div class="mr-2 rounded-full overflow-hidden">
+      <div class="mr-2 rounded-full overflow-hidden" @click="storeApp.modal = 'occupy'">
         <img src="" alt="封面">
       </div>
       <div>

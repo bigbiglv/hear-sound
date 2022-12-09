@@ -9,13 +9,14 @@ enum Modal {
   'occupy' = 'h-screen bottom-0'
 }
 const ModalClass = computed(() => {
-  return Modal[store.modal]
+  let rounded = store.modal === 'normal' && 'rounded-t-2xl'
+  return `${Modal[store.modal]} ${rounded}`
 })
 </script>
 
 <template>
   <!-- 三个模式: 全不显示; 露出90px; 全遮挡 -->
-  <div class="w-screen fixed bg-red-300 rounded-t-2xl transition-all duration-150" :class="ModalClass">
+  <div class="w-screen fixed bg-red-300 transition-all duration-150" :class="ModalClass">
     <Tool />
   </div>
 </template>
