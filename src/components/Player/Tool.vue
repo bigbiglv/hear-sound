@@ -11,17 +11,21 @@ const percentClass = computed(() => {
 </script>
 
 <template>
-  <div class="px-4 relative flex justify-between items-center cursor-pointer box-border z-10">
-    <div class="flex">
-      <div class="mr-2 rounded-full overflow-hidden" @click="storeApp.setModal('occupy')">
-        <img src="" alt="封面">
-      </div>
-      <div>
-        <p>{{ store.playSong?.name }}</p>
-        <p>
-          <span v-for="artist in store.playSong?.artists" :key="artist.id"> {{ artist.name }} </span>
-        </p>
-      </div>
+  <div class="h-full px-4 relative flex justify-between items-center cursor-pointer box-border z-10">
+    <div class="w-10 h-10 mr-2 rounded-full overflow-hidden" @click="storeApp.setModal('occupy')">
+      <img src="" alt="封面">
+    </div>
+    <div class="w-1/2 h-full px-2 flex-grow text-dark-600">
+      <p class="text-base">{{ store.playSong?.name }}</p>
+      <p class="text-sm">
+        <span 
+          class="mr-1"  
+          v-for="artist in store.playSong?.artists" 
+          :key="artist.id"
+        >
+          {{ artist.name }}
+        </span>
+      </p>
     </div>
     <div class="flex">
       <button @click="store.isPlay ? store.pause() : store.play()">
