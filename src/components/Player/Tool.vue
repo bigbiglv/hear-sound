@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import audioStore from '@/store/audioStore'
 const store = audioStore()
+const percentClass = computed(() => {
+  let result = (store.currentTime / store.duration) * 100
+  return `width: ${result ? result.toFixed(0) : 0 }%`
+}) 
 </script>
 
 <template>
-  <div class="px-4 flex justify-between cursor-pointer">
+  <div class="px-4 relative flex justify-between items-center cursor-pointer box-border z-10">
     <div class="flex">
-      <div class="mr-2">
+      <div class="mr-2 rounded-full overflow-hidden">
         <img src="" alt="封面">
       </div>
       <div>
@@ -21,6 +26,10 @@ const store = audioStore()
         {{ store.isPlay ? '暂停' : '播放' }}
       </button>
       <button @click="store.next()">下一曲</button>
+    </div>
+    <!-- 进度 -->
+    <div class="absolute w-full h-1px bottom-0 left-0 opacity-50">
+      <div class="h-full bg-red-600" :style="percentClass"></div>
     </div>
   </div>
 </template>
