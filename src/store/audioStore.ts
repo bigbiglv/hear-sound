@@ -200,9 +200,13 @@ export default defineStore('audio',{
       const { data } = await SongUrl(params) || {}
       // 设置audio的src
       let url = data?.[0]?.url
-      url && this.setAudioSrc(url)
+      if (url){
+        this.setAudioSrc(url)
+        // 获取歌词
+        this.getLyric()
+      }
     },
-    /** 根据playIndex获取songUrl */
+    /** 根据 playSong 获取 songUrl */
     async getSongUrlforIndex() {
       if(!this.playList.length) return
       const id = this.playSong?.id
