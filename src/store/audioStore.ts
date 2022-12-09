@@ -51,7 +51,7 @@ export default defineStore('audio',{
     createAudioContext() {
       // 创建audio元素
       const mediaElement: HTMLAudioElement = document.createElement('audio')
-      mediaElement.setAttribute('controls', 'true')
+      // mediaElement.setAttribute('controls', 'true')
       mediaElement.setAttribute('crossorigin', 'anonymous')
       mediaElement.setAttribute('preload', 'auto')
       // 添加audio元素
