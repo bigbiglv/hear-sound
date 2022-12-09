@@ -11,8 +11,11 @@ const percentClass = computed(() => {
 </script>
 
 <template>
-  <div class="h-full px-4 relative flex justify-between items-center cursor-pointer box-border z-10">
-    <div class="w-10 h-10 mr-2 rounded-full overflow-hidden" @click="storeApp.setModal('occupy')">
+  <div
+    class="h-full px-4 relative flex justify-between items-center cursor-pointer box-border z-10"
+    @click="storeApp.setModal('occupy')"
+  >
+    <div class="w-10 h-10 mr-2 rounded-full overflow-hidden">
       <img src="" alt="封面">
     </div>
     <div class="w-1/2 h-full px-2 flex-grow text-dark-600">
@@ -28,10 +31,10 @@ const percentClass = computed(() => {
       </p>
     </div>
     <div class="flex">
-      <button @click="store.isPlay ? store.pause() : store.play()">
+      <button @click.stop="store.isPlay ? store.pause() : store.play()">
         {{ store.isPlay ? '暂停' : '播放' }}
       </button>
-      <button @click="store.next()">下一曲</button>
+      <button @click.stop="store.next()">下一曲</button>
     </div>
     <!-- 进度 -->
     <div class="absolute w-full h-1px bottom-0 left-0 opacity-50">
