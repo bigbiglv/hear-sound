@@ -13,6 +13,8 @@ interface IState{
   volume: number,
   loop: boolean,
   muted: boolean,
+  fadeVolume: { isFade: boolean, volume: number },
+  fadeId: number | null,
   waiting: boolean,
   playList: Array<NSearch.ISongs>,
   playIndex: number,
@@ -33,6 +35,11 @@ export default defineStore('audio',{
     volume: 0,      // 音量
     loop: false,    // 单曲循环
     muted: false,   // 静音
+    fadeVolume: {
+      isFade: true,  // 渐入渐出
+      volume: 0,     // 原本的this.volume不变修改这个变量
+    },     
+    fadeId: 0,
     waiting: false,  // 加载中
     playList: [],   // 播放列表 歌曲信息
     playIndex: 0,   // 播放歌曲的下标
@@ -82,6 +89,8 @@ export default defineStore('audio',{
       // 触发第一帧
       mediaElement.addEventListener('loadeddata', () => {
         this.duration = mediaElement.duration
+        this.volume = mediaElement.volume
+        this.fadeVolume.volume = this.volume
       })
 
       // 播放结束
@@ -99,9 +108,10 @@ export default defineStore('audio',{
       }
 
       // 音量
-      mediaElement.onvolumechange = () => {
-        this.volume = mediaElement.volume
-      }
+      // mediaElement.onvolumechange = () => {
+      //   this.volume = mediaElement.volume
+      //   this.fadeVolume.volume = this.volume
+      // }
 
       // 音频缺少数据加载中
       mediaElement.onwaiting  = () => {
@@ -119,6 +129,7 @@ export default defineStore('audio',{
     },
     /** 设置音量 */
     setVolume(volume: number) {
+      if(volume > 1 ) return
       this.mediaElement!.volume = volume
     },
     /** 循环单曲 */
@@ -181,18 +192,54 @@ export default defineStore('audio',{
         // 用于有列表 首次触发播放事件
         if (!this.songUrl && this.playList.length) {
           // 根据playIndex获取当前选中的歌曲
-          this.getSongUrlforIndex().catch(() => {
+          await this.getSongUrlforIndex().catch(() => {
             rej('getSongUrl获取url失败')
           })
+        }
+        if (this.fadeVolume.isFade) {
+          await this.setFade()
         }
         this.mediaElement?.play()
         this.isPlay = true
         res('success')
       })
     },
+    /** 音量渐入渐出 */
+    setFade() {
+      return new Promise<number>((resolve, reject) => {
+        let start = () => {
+          this.fadeId = requestAnimationFrame(start)
+          console.log('绘制', this.volume)
+          let next: boolean
+
+          if(this.isPlay) {
+            // 播放状态为递减
+            this.fadeVolume.volume = parseFloat((this.fadeVolume.volume - 0.01).toFixed(2))
+            next = this.fadeVolume.volume <= 0
+          }else{
+            // 暂停状态是递增
+            this.fadeVolume.volume = parseFloat((this.fadeVolume.volume + 0.01).toFixed(2))
+            next = this.fadeVolume.volume >= this.volume
+          }
+          // 设置音量
+          this.setVolume(this.fadeVolume.volume)
+          if (this.fadeId && next) {
+            // 音量降到0
+            cancelAnimationFrame(this.fadeId)
+            // 恢复音量
+            // this.setVolume(this.volume)
+            resolve(this.fadeId)
+          }
+        }
+        start()
+      })
+    },
     /** 暂停 */
-    pause() {
+    async pause() {
       if (this.mediaElement?.paused) return 
+      if (this.fadeVolume.isFade) {
+        await this.setFade()
+      }
       this.mediaElement?.pause()
       this.isPlay = false
       // 停止绘制
