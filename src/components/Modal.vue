@@ -17,7 +17,7 @@ const ModalClass = computed(() => {
 
 <template>
   <!-- 三个模式: 全不显示; 露出90px; 全遮挡 -->
-  <div class="w-screen fixed bg-red-300 transition-all duration-150" :class="ModalClass">
+  <div class="w-screen fixed bg-light-700 transition-all duration-300" :class="ModalClass">
     <Tool />
     <LyricList />
   </div>

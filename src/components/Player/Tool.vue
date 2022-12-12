@@ -8,17 +8,26 @@ const percentClass = computed(() => {
   let result = (store.currentTime / store.duration) * 100
   return `width: ${result ? result.toFixed(0) : 0 }%`
 })
+// modal不同状态的样式
+const contentClass = computed(() => {
+  if(storeApp.modal === 'normal') {
+    return 'bottom-0'
+  }else if (storeApp.modal === 'occupy') {
+    return 'bottom-6'
+  }
+})
 </script>
 
 <template>
   <div
-    class="h-full px-4 relative flex justify-between items-center cursor-pointer box-border z-10"
+    class="h-16 px-4 absolute flex justify-between items-center box-border transition-all duration-300 z-10"
+    :class="contentClass"
     @click="storeApp.setModal('occupy')"
   >
     <div class="w-10 h-10 mr-2 rounded-full overflow-hidden">
       <img src="" alt="封面">
     </div>
-    <div class="w-1/2 h-full px-2 flex-grow text-dark-600">
+    <div class="w-1/2 h-full px-2 flex justify-center flex-col flex-grow text-dark-600 truncate">
       <p class="text-base">{{ store.playSong?.name }}</p>
       <p class="text-sm">
         <span 
