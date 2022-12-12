@@ -3,7 +3,15 @@
 </script>
 
 <template>
-  <span class="text-blue-500">1111</span>
+  <div class="pt-11">
+    <!-- 搜索 -->
+    <router-link 
+      class="w-screen h-11 fixed top-0 left-0 flex justify-center items-center bg-white shadow-md rounded-b-lg"
+      to="/search"
+      >
+      <div class=" w-13/14 h-4/5 bg-light-500 rounded-full"></div>
+    </router-link>
+  </div>
 </template>
 
 
