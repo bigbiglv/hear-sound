@@ -4,6 +4,7 @@ import Error from '@/views/Error/index.vue'
 export const base: Array<RouteRecordRaw> = [
   {
     path:'/',
+    alias: '/home',
     name: 'index',
     meta: {
       isLogin: false,
