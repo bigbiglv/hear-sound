@@ -209,15 +209,14 @@ export default defineStore('audio',{
       return new Promise<number>((resolve, reject) => {
         let start = () => {
           this.fadeId = requestAnimationFrame(start)
-          console.log('绘制', this.volume)
+          // 音量是否达到停止条件
           let next: boolean
-
           if(this.isPlay) {
-            // 播放状态为递减
+            // 点击暂停音量状态为递减
             this.fadeVolume.volume = parseFloat((this.fadeVolume.volume - 0.01).toFixed(2))
             next = this.fadeVolume.volume <= 0
           }else{
-            // 暂停状态是递增
+            // 点击播放音量状态为递增
             this.fadeVolume.volume = parseFloat((this.fadeVolume.volume + 0.01).toFixed(2))
             next = this.fadeVolume.volume >= this.volume
           }
