@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import Tool from '@/components/Player/Tool.vue'
 import LyricList from './Lyric/List.vue'
+import dynamics from 'dynamics.js'
 import appStore from '@/store/appStore'
 const store = appStore()
 enum Modal {
@@ -13,6 +14,7 @@ const ModalClass = computed(() => {
   let rounded = store.modal === 'normal' && 'rounded-t-2xl'
   return `${Modal[store.modal]} ${rounded}`
 })
+console.log('dynamics', dynamics)
 </script>
 
 <template>

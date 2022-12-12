@@ -4,6 +4,7 @@ specifiers:
   '@types/node': ^18.11.9
   '@vitejs/plugin-vue': ^3.2.0
   axios: ^1.2.1
+  dynamics.js: ^1.1.5
   pinia: ^2.0.26
   ts-node: ^10.9.1
   typescript: ^4.6.4
@@ -17,6 +18,7 @@ specifiers:
 dependencies:
   '@types/node': 18.11.9
   axios: 1.2.1
+  dynamics.js: 1.1.5
   pinia: 2.0.26_mgnvym7yiazkylwwogi5r767ue
   ts-node: 10.9.1_wup25etrarvlqkprac7h35hj7u
   vue: 3.2.45
@@ -376,6 +378,10 @@ packages:
   /diff/4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
+    dev: false
+
+  /dynamics.js/1.1.5:
+    resolution: {integrity: sha512-c+LHNccaJS67T4Jfk9b/5CwYsZCHmc10+MplWB8WPFyqTMEqOf8MI56Rg0JRILWjtXnjuBO7xmrNevNnPX+NHg==}
     dev: false
 
   /esbuild-android-64/0.15.15:
