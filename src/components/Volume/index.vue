@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed } from 'vue'
+import Progress from '@/components/Progress/index.vue'
 import { storeToRefs } from 'pinia' 
 import appStore from '@/store/appStore'
 const storeApp = appStore()
@@ -32,9 +33,9 @@ const contextClass = computed(() => {
 <template>
   <div 
     id="volumeModal"
-    class="fixed rounded-full transform bg-light-900 z-50" 
+    class="fixed rounded-full transform bg-light-900 z-50 flex justify-center items-center" 
     :class="contextClass"
     >
-    进度
+    <Progress />
   </div>
 </template>
