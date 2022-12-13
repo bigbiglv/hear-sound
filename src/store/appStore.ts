@@ -45,10 +45,10 @@ export default defineStore('app',{
         this.modal = modal
       }
       // 执行动画
-      this.animation(height)
+      this.animationModal(height)
     },
-    /** 改变高度的动画 */
-    animation(height: string) {
+    /** 改变modal高度的动画 */
+    animationModal(height: string) {
       const modalElement = document.getElementById('appModal')
       dynamics.animate(
         modalElement,
