@@ -9,6 +9,7 @@ type TState = {
     normal: string,
     occupy: string,
   },
+  volumeModal: boolean,
   volumePosition: TPosition
 }
 export default defineStore('app',{
@@ -20,6 +21,7 @@ export default defineStore('app',{
       normal: '56px',
       occupy: '800px'
     },
+    volumeModal: false,
     volumePosition: 'right'
 
   }),
@@ -59,6 +61,43 @@ export default defineStore('app',{
           type: dynamics.spring,
           duration: 500,
           friction: 400,
+        }
+      )
+    },
+    /** 打开音量弹窗 */
+    openVolumeModal(){
+      // 根据弹窗位置来判断需要执行的动画位置
+      const volumeElement = document.getElementById('volumeModal')
+      dynamics.animate(
+        volumeElement,
+        {
+          [this.volumePosition] : '50px',
+        },
+        {
+          type: dynamics.spring,
+          duration: 500,
+          friction: 400,
+          complete: () => {
+            this.volumeModal = true
+          }
+        }
+      )
+    },
+    /** 关闭音量弹窗 */
+    closeVolumeModal(){
+      const volumeElement = document.getElementById('volumeModal')
+      dynamics.animate(
+        volumeElement,
+        {
+          [this.volumePosition] : '0px',
+        },
+        {
+          type: dynamics.spring,
+          duration: 500,
+          friction: 400,
+          complete: () => {
+            this.volumeModal = false
+          }
         }
       )
     },
