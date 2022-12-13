@@ -96,9 +96,8 @@ export default defineStore('app',{
           [this.volumePosition] : '0px',
         },
         {
-          type: dynamics.spring,
-          duration: 500,
-          friction: 400,
+          type: dynamics.linear,
+          duration: 200,
           complete: () => {
             this.volumeModal = false
           }
