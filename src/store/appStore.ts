@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { TModal } from './types'
+import type { TModal, TMode, TPosition } from './types'
 import dynamics from 'dynamics.js'
 import audioStore from './audioStore'
 type TState = {
@@ -8,7 +8,8 @@ type TState = {
     hidden: string,
     normal: string,
     occupy: string,
-  }
+  },
+  volumePosition: TPosition
 }
 export default defineStore('app',{
   state: (): TState => ({
@@ -18,7 +19,9 @@ export default defineStore('app',{
       hidden: '0px',
       normal: '56px',
       occupy: '800px'
-    }
+    },
+    volumePosition: 'right'
+
   }),
   actions: {
     /** 设置播放弹窗的显示模式 */
@@ -65,6 +68,14 @@ export default defineStore('app',{
     modalStyle: (state) => {
       let height = `height: ${state.height[state.modal]};`
       return height
-    }
+    },
+    // 音量弹窗的模式
+    volumeMode(): TMode {
+      if (this.volumePosition === 'left' || this.volumePosition === 'right'){
+        return 'vertical'
+      }else{
+        return 'horizontal'
+      }
+    },
   },
 })
