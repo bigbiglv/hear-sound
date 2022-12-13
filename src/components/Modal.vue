@@ -14,7 +14,7 @@ const ModalClass = computed(() => {
   <!-- 三个模式: 全不显示; 露出90px; 全遮挡 -->
   <div 
     id="appModal"
-    class="w-screen fixed bg-light-700 bottom-0 z-50"
+    class="w-screen fixed bg-light-700 bottom-0 z-40"
     :style="store.modalStyle"
     :class="ModalClass"
     >
