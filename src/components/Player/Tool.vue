@@ -16,6 +16,12 @@ const contentClass = computed(() => {
     return 'bottom-6'
   }
 })
+
+// 隐藏的状态下 监听播放列表的长度判断是否显示
+store.$subscribe((mutation, state)=>{
+  if (storeApp.modal === 'hidden' && state.playList.length)
+    storeApp.setModal('normal')
+})
 </script>
 
 <template>

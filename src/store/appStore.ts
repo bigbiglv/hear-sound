@@ -15,7 +15,7 @@ type TState = {
 export default defineStore('app',{
   state: (): TState => ({
     // 全局弹窗
-    modal: 'normal',
+    modal: 'hidden',
     height: {
       hidden: '0px',
       normal: '56px',
