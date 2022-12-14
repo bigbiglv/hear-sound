@@ -3,5 +3,5 @@
 </script>
 
 <template>
-  <div>artist</div>
+  <div class="bg-yellow-100 w-full h-80">artist</div>
 </template>
