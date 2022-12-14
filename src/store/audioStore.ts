@@ -182,6 +182,7 @@ export default defineStore('audio',{
     },
     /** 播放 */
     play() {
+      if(!this.playList.length) return
       return new Promise(async (res, rej) => {
         // 如果audioContext没有开启 先开启
         if ( this.audioContext?.state !== 'running') {
