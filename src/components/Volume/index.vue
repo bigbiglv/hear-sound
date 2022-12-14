@@ -11,22 +11,13 @@ const contextClass = computed(() => {
   let modeClass = volumeMode.value === 'vertical' ? `w-10 h-50` : `w-50 h-10`
   // 设置居中 默认靠边 通过位置移动到不可见
   let positionClass: string = `${volumePosition.value}-0 `
-  switch (volumePosition.value) {
-    case 'top':
-      positionClass += 'left-1/2 -translate-x-1/2 -translate-y-full'
-      break
-    case 'bottom':
-      positionClass += 'left-1/2 -translate-x-1/2 translate-y-full'
-      break
-    case 'right':
-      positionClass += 'top-1/2 -translate-y-1/2 translate-x-full'
-      break
-    case 'left':
-      positionClass += 'top-1/2 -translate-y-1/2 -translate-x-full'
-      break
-    default:
-      break
+  let classObj = {
+    top: 'left-1/2 -translate-x-1/2 -translate-y-full',
+    bottom: 'left-1/2 -translate-x-1/2 translate-y-full',
+    right: 'top-1/2 -translate-y-1/2 translate-x-full',
+    left: 'top-1/2 -translate-y-1/2 -translate-x-full'
   }
+  positionClass += classObj[volumePosition.value]
   return `${modeClass} ${positionClass}`
 })
 const storeAudio = audioStore()
