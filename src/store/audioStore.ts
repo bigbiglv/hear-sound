@@ -131,6 +131,7 @@ export default defineStore('audio',{
     setVolume(volume: number) {
       if(volume > 1 ) return
       this.mediaElement!.volume = volume
+      this.volume = volume
     },
     /** 循环单曲 */
     setLoopSong(isLoop: boolean) {
