@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import Tool from '@/components/Player/Tool.vue'
 import LyricList from './Lyric/List.vue'
+import CurrentTime from './Player/CurrentTime.vue'
 import appStore from '@/store/appStore'
 const store = appStore()
 const ModalClass = computed(() => {
@@ -18,8 +19,11 @@ const ModalClass = computed(() => {
     :style="store.modalStyle"
     :class="ModalClass"
     >
+    <div class="h-full grid grid-cols-1 grid-rows-3" v-show="store.modal === 'occupy'">
+      <LyricList />
+      <CurrentTime />
+    </div>
     <Tool />
-    <LyricList />
   </div>
 </template>
 
