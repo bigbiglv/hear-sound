@@ -26,16 +26,18 @@ store.$subscribe((mutation, state)=>{
 
 <template>
   <div
-    class="h-16 px-4 absolute flex justify-between items-center box-border transition-all duration-300 z-10"
+    class="w-full h-16 px-4 absolute flex justify-between items-center box-border transition-all duration-300 z-10"
     :class="contentClass"
     @click="storeApp.setModal('occupy')"
   >
     <div class="w-10 h-10 mr-2 rounded-full overflow-hidden">
       <img src="" alt="封面">
     </div>
-    <div class="w-1/2 h-full px-2 flex justify-center flex-col flex-grow text-dark-600 truncate">
-      <p class="text-base">{{ store.playSong?.name }}</p>
-      <p class="text-sm">
+    <div class="h-full px-2 flex justify-center flex-col flex-grow text-dark-600">
+      <!-- 歌曲名 -->
+      <p class="w-11/12 text-base truncate">{{ store.playSong?.name }}</p>
+      <!-- 歌手名 -->
+      <!-- <p class="text-sm">
         <span 
           class="mr-1"  
           v-for="artist in store.playSong?.artists" 
@@ -43,7 +45,7 @@ store.$subscribe((mutation, state)=>{
         >
           {{ artist.name }}
         </span>
-      </p>
+      </p> -->
     </div>
     <div class="flex">
       <button @click.stop="store.isPlay ? store.pause() : store.play()">
