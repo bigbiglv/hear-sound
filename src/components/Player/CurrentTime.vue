@@ -19,15 +19,14 @@ const currentTimeFormat = computed(() => {
 const durationTimeFormat = computed(() => {
   return forMatTime(durationTime.value)
 })
-
 </script>
 
 <template>
   <div class="w-full">
     <Progress :max="durationTime" :min="0" v-model="currentTime" />
     <div class="w-full flex justify-between items-center text-dark-50 text-xs">
-      <span>{{ currentTimeFormat || '00:00' }}</span>
-      <span>{{ durationTimeFormat || '00:00'}}</span>
+      <span>{{ currentTimeFormat }}</span>
+      <span>{{ durationTimeFormat }}</span>
     </div>
   </div>
 </template>
