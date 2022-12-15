@@ -9,7 +9,8 @@ dayjs.extend(duration)
 const { currentTime, duration: durationTime } = storeToRefs(audioStore())
 // 时间戳格式化显示
 function forMatTime(time: number) {
-  const forMat = dayjs.duration(time).asHours() >= 1 ? 'HH:mm:ss' : 'mm:ss'
+  const hasHour: boolean = dayjs.duration(time).asHours() >= 1
+  const forMat: string = hasHour ? 'HH:mm:ss' : 'mm:ss'
   return dayjs.duration(time).format(forMat)
 }
 const currentTimeFormat = computed(() => {
