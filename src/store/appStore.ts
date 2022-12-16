@@ -99,6 +99,7 @@ export default defineStore('app',{
           type: dynamics.linear,
           duration: 200,
           complete: () => {
+            volumeElement?.setAttribute('style', '')
             this.volumeModal = false
           }
         }
