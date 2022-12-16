@@ -3,9 +3,9 @@ import { TMode } from '@/store/types';
 import { computed } from 'vue'
 type Props = {
   modelValue: number,
-  max: number,
-  min: number,
-  position: TMode
+  max?: number,
+  min?: number,
+  position?: TMode
 }
 const props = withDefaults(defineProps<Props>(), {
   modelValue: 0,
