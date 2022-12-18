@@ -299,9 +299,8 @@ export default defineStore('audio',{
       const result = await Lyric(params) as any as NLyric.TResData
       this.lyric = {
         lrc: result?.lrc.lyric,
-        romalrc: result?.romalrc.lyric
+        romalrc: result?.romalrc?.lyric
       }
-      console.log('lyric', this.lyric.lrc?.split('\n'))
     },
     /** 
      * 插入单曲播放
