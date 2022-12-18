@@ -11,7 +11,7 @@ const { currentTime, duration: durationTime } = storeToRefs(audioStore())
 function forMatTime(time: number) {
   const hasHour: boolean = dayjs.duration(time).asHours() >= 1
   const forMat: string = hasHour ? 'HH:mm:ss' : 'mm:ss'
-  return dayjs.duration(time).format(forMat)
+  return dayjs.duration(Number(time.toFixed(0)) * 1000).format(forMat)
 }
 const currentTimeFormat = computed(() => {
   return forMatTime(currentTime.value)
