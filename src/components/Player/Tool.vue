@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import audioStore from '@/store/audioStore'
 import appStore from '@/store/appStore'
+import { useElementSize } from '@vueuse/core'
 const store = audioStore()
 const storeApp = appStore()
 const percentClass = computed(() => {
@@ -22,6 +23,16 @@ store.$subscribe((mutation, state)=>{
   if (storeApp.modal === 'hidden' && state.playList.length)
     storeApp.setModal('normal')
 })
+
+// 名称滚动
+const nameBoxRef = ref<HTMLElement | null>(null)
+const nameRef = ref<HTMLElement | null>(null)
+const { width: nameBoxWidth } = useElementSize(nameBoxRef)
+const { width: nameWidth } = useElementSize(nameRef)
+// 是否名字过长无法全部显示
+const isLongName = computed(() => {
+  return nameBoxWidth < nameWidth
+})
 </script>
 
 <template>
@@ -33,9 +44,13 @@ store.$subscribe((mutation, state)=>{
     <div class="w-10 h-10 flex-none mr-2 rounded-full overflow-hidden">
       <img src="" alt="封面">
     </div>
-    <div class="w-3/5 h-full mr-2 flex justify-center items-center text-dark-600">
+    <div class="w-3/5 mr-2 text-dark-600 overflow-hidden">
       <!-- 歌曲名 -->
-      <p class=" text-base truncate">{{ store.playSong?.name }}</p>
+      <p class="text-base whitespace-nowrap" ref="nameBoxRef">
+        <span class="inline-block" ref="nameRef">
+          {{ store.playSong?.name }}
+        </span>
+      </p>
       <!-- 歌手名 -->
       <!-- <p class="text-sm">
         <span 
@@ -47,7 +62,7 @@ store.$subscribe((mutation, state)=>{
         </span>
       </p> -->
     </div>
-    <div class="w-40 h-full flex flex-none">
+    <div class="w-20 h-full flex flex-none">
       <button @click.stop="store.isPlay ? store.pause() : store.play()">
         {{ store.isPlay ? '暂停' : '播放' }}
       </button>
