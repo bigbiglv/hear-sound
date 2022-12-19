@@ -12,14 +12,14 @@ const ModalClass = computed(() => {
   return rounded
 })
 // 点击外部关闭弹窗
-const appModal = ref<HTMLElement | null>(null)
+const appModalRef = ref<HTMLElement | null>(null)
 onClickOutside(
-  appModal,
+  appModalRef,
   () => store.setModal('normal')
 )
 
 // 滑动底部关闭
-const { y, isDrag } = useDrag(appModal)
+const { y, isDrag } = useDrag(appModalRef)
 const modalbottom = computed(() => {
   return `bottom: -${y.value}px`
 })
@@ -35,7 +35,7 @@ watch(isDrag, () => {
   <!-- 三个模式: 全不显示; 露出90px; 全遮挡 -->
   <div 
     id="appModal"
-    ref="appModal"
+    ref="appModalRef"
     class="w-screen fixed bg-light-700 bottom-0 z-40"
     :style="[store.modalStyle, modalbottom]"
     :class="ModalClass"
