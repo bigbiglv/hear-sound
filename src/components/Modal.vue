@@ -6,7 +6,9 @@ import Tool from '@/components/Player/Tool.vue'
 import LyricList from './Lyric/List.vue'
 import CurrentTime from './Player/CurrentTime.vue'
 import appStore from '@/store/appStore'
+import audioStore from '@/store/audioStore'
 const store = appStore()
+const storeAudio = audioStore()
 const ModalClass = computed(() => {
   let rounded = store.modal === 'normal' && 'rounded-t-2xl'
   return rounded
@@ -40,7 +42,10 @@ watch(isDrag, () => {
     :style="[store.modalStyle, modalbottom]"
     :class="ModalClass"
     >
-    <div class="h-full grid grid-cols-1 grid-rows-3" v-show="store.modal === 'occupy'">
+    <div class="h-full flex flex-col" v-show="store.modal === 'occupy'">
+      <nav class="w-full text-center py-4">
+        {{ storeAudio.playSong?.name }}
+      </nav>
       <LyricList />
       <CurrentTime />
     </div>
