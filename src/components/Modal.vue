@@ -46,8 +46,10 @@ watch(isDrag, () => {
       <nav class="w-full text-center py-4">
         {{ storeAudio.playSong?.name }}
       </nav>
-      <LyricList />
-      <CurrentTime />
+      <template v-if="store.modal === 'occupy'">
+        <LyricList />
+        <CurrentTime />
+      </template>
     </div>
     <Tool />
   </div>
