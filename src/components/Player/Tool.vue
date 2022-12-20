@@ -2,25 +2,35 @@
 import { computed, ref } from 'vue'
 import audioStore from '@/store/audioStore'
 import appStore from '@/store/appStore'
+import { storeToRefs } from 'pinia'
 import { useElementSize } from '@vueuse/core'
 const store = audioStore()
 const storeApp = appStore()
+const { currentTime, duration, playSong } = storeToRefs(store)
+const { modal } = storeToRefs(storeApp)
+
+// 当前modal是不是 normal
+const isModalNormal = computed(() => {
+  return modal.value === 'normal'
+})
+
+// 底部小的进度条显示
 const percentClass = computed(() => {
-  let result = (store.currentTime / store.duration) * 100
+  let result = (currentTime.value / duration.value) * 100
   return `width: ${result ? result.toFixed(0) : 0 }%`
 })
 // modal不同状态的样式
 const contentClass = computed(() => {
-  if(storeApp.modal === 'normal') {
+  if(modal.value === 'normal') {
     return 'bottom-0'
-  }else if (storeApp.modal === 'occupy') {
+  } else if (modal.value === 'occupy') {
     return 'bottom-6'
   }
 })
 
 // 隐藏的状态下 监听播放列表的长度判断是否显示
 store.$subscribe((mutation, state)=>{
-  if (storeApp.modal === 'hidden' && state.playList.length)
+  if (modal.value === 'hidden' && state.playList.length)
     storeApp.setModal('normal')
 })
 
@@ -33,6 +43,12 @@ const { width: nameWidth } = useElementSize(nameRef)
 const isLongName = computed(() => {
   return nameBoxWidth < nameWidth
 })
+
+// 按钮样式
+const btnClass = computed(() => {
+  const btnClass = modal.value === 'occupy' ? 'w-full px-4' : 'w-20'
+  return btnClass
+})
 </script>
 
 <template>
@@ -41,14 +57,14 @@ const isLongName = computed(() => {
     :class="contentClass"
     @click="storeApp.setModal('occupy')"
   >
-    <div class="w-10 h-10 flex-none mr-2 rounded-full overflow-hidden">
+    <div class="w-10 h-10 flex-none mr-2 rounded-full overflow-hidden" v-show="isModalNormal">
       <img src="" alt="封面">
     </div>
-    <div class="w-3/5 mr-2 text-dark-600 overflow-hidden">
+    <div class="w-3/5 mr-2 text-dark-600 overflow-hidden" v-show="isModalNormal">
       <!-- 歌曲名 -->
       <p class="text-base whitespace-nowrap" ref="nameBoxRef">
         <span class="inline-block" ref="nameRef">
-          {{ store.playSong?.name }}
+          {{ playSong?.name }}
         </span>
       </p>
       <!-- 歌手名 -->
@@ -62,14 +78,18 @@ const isLongName = computed(() => {
         </span>
       </p> -->
     </div>
-    <div class="w-20 h-full flex flex-none">
+    <div
+      class="h-full flex flex-none justify-between transition-all duration-150"
+      :class="btnClass"
+      >
+      <button @click.stop="store.prev()" v-show="!isModalNormal">上一曲</button>
       <button @click.stop="store.isPlay ? store.pause() : store.play()">
         {{ store.isPlay ? '暂停' : '播放' }}
       </button>
       <button @click.stop="store.next()">下一曲</button>
     </div>
     <!-- 进度 -->
-    <div class="absolute w-full h-1px bottom-0 left-0 opacity-50" v-show="storeApp.modal === 'normal'">
+    <div class="absolute w-full h-1px bottom-0 left-0 opacity-50" v-show="isModalNormal">
       <div class="h-full bg-red-600" :style="percentClass"></div>
     </div>
   </div>
