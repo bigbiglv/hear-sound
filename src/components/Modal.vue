@@ -17,7 +17,7 @@ const ModalClass = computed(() => {
 const appModalRef = ref<HTMLElement | null>(null)
 onClickOutside(
   appModalRef,
-  () => store.setModal('normal')
+  () => store.modal === 'occupy' && store.setModal('normal')
 )
 
 // 滑动底部关闭
