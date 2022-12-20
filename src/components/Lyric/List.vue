@@ -103,6 +103,7 @@ onMounted(() => {
     class="w-full h-3/4 overflow-y-auto flex justify-center"
     ref="contextRef"
     @touchstart="isScroll = true"
+    @touchmove="(e) => e.stopPropagation()"
     @touchend="isScroll = false"
     >
     <ul class="w-3/4" ref="ulRef">
@@ -110,7 +111,7 @@ onMounted(() => {
         v-for="lrc in lyricList" 
         :key="lrc.time" 
         class="text-center"
-        :class="{ 'text-yellow-300': onTime === lrc.time}"
+        :class="{'text-yellow-300': onTime === lrc.time}"
         >
         {{ lrc.words }}
       </li>
