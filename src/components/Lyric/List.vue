@@ -3,9 +3,10 @@ import { computed } from 'vue'
 import audioStore from '@/store/audioStore'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
+import { storeToRefs } from 'pinia'
 dayjs.extend(duration)
 const storeAudio = audioStore()
-
+const { currentTime, lyric } = storeToRefs(storeAudio)
 // 时长转秒数 '00:01:00' => 60
 function formatSeconds(time: string): number {
   const hasHour = time.split(":").length === 3
@@ -30,8 +31,8 @@ function formatSeconds(time: string): number {
   return durationToseconds
 }
 // 歌词数组转格式 [ {time, words} ]
-const lyric = computed(() => {
-  return storeAudio.lyric.lrc?.split('\n').map(item => {
+const lyricList = computed(() => {
+  return lyric.value.lrc?.split('\n').map(item => {
     const key = item && `${item.split(']')[0]}`.substring(1)
     const time = formatSeconds(key)
     const words = item && `${item.split(']')[1]}`
@@ -42,15 +43,22 @@ const lyric = computed(() => {
   }).filter(item => item['words'])
 })
 
-const onIndex = computed(() => {
-
+const onTime = computed(() => {
+  const arr = lyricList.value?.filter(el => el.time <= currentTime.value)
+  console.log(arr)
+  return arr?.[arr.length - 1].time
 })
 </script>
 
 <template>
   <div class="w-full h-3/4 overflow-y-auto flex justify-center">
     <ul class="w-3/4">
-      <li v-for="(lrc,index) in lyric" :key="lrc.time" class="text-center">
+      <li 
+        v-for="lrc in lyricList" 
+        :key="lrc.time" 
+        class="text-center"
+        :class="{ 'text-yellow-300': onTime === lrc.time}"
+        >
         {{ lrc.words }}
       </li>
     </ul>
