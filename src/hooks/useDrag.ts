@@ -14,11 +14,7 @@ export default function useDrag(el: TElement) {
   //touch的状态
   const isDrag = ref(false)
   onMounted(() => {
-
     const element = unref(el)
-    console.log('element', element)
-
-    
     element?.addEventListener('touchstart', (e:TouchEvent)=>{
       startX.value = e.touches[0].clientX
       startY.value = e.touches[0].clientY
