@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import audioStore from '@/store/audioStore'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
@@ -66,7 +66,11 @@ watch(onTime, () => {
 /**
  * 歌词滚动至居中位置
  */
+// 是否正在手动拉动歌词
+const isScroll = ref(false)
 function scrollCenter() {
+  // 手动拖动的时候不执行
+  if (isScroll.value) return
   // 每一句的歌词dom的集合
   const liList = ulRef.value?.children
   // 当句歌词的下标
@@ -86,12 +90,21 @@ function scrollCenter() {
     behavior: 'smooth'
   })
 }
-// 每次刚加载都刷新一次
-scrollCenter()
+onMounted(() => {
+  // 每次刚加载都刷新一次
+  scrollCenter()
+})
+
+
 </script>
 
 <template>
-  <div class="w-full h-3/4 overflow-y-auto flex justify-center" ref="contextRef">
+  <div
+    class="w-full h-3/4 overflow-y-auto flex justify-center"
+    ref="contextRef"
+    @touchstart="isScroll = true"
+    @touchend="isScroll = false"
+    >
     <ul class="w-3/4" ref="ulRef">
       <li 
         v-for="lrc in lyricList" 
