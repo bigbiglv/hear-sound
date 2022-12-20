@@ -25,7 +25,7 @@ const durationTimeFormat = computed(() => {
 const progress = computed({
   get(){
     // 值来自audioStore的音乐进度
-    return durationTime.value
+    return currentTime.value
   },
   set(val){
     // 改变的时候调用改变进度
