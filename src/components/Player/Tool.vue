@@ -15,7 +15,7 @@ const isModalNormal = computed(() => {
 })
 
 // 底部小的进度条显示
-const percentClass = computed(() => {
+const percentStyle = computed(() => {
   let result = (currentTime.value / duration.value) * 100
   return `width: ${result ? result.toFixed(0) : 0 }%`
 })
@@ -90,7 +90,7 @@ const btnClass = computed(() => {
     </div>
     <!-- 进度 -->
     <div class="absolute w-full h-1px bottom-0 left-0 opacity-50" v-show="isModalNormal">
-      <div class="h-full bg-red-600" :style="percentClass"></div>
+      <div class="h-full bg-red-600" :style="percentStyle"></div>
     </div>
   </div>
 </template>
