@@ -32,9 +32,9 @@ function formatSeconds(time: string): number {
 // 歌词数组转格式 [ {time, words} ]
 const lyric = computed(() => {
   return storeAudio.lyric.lrc?.split('\n').map(item => {
-    const key = `${item.split(']')[0]}`.substring(1)
+    const key = item && `${item.split(']')[0]}`.substring(1)
     const time = formatSeconds(key)
-    const words = `${item.split(']')[1]}`
+    const words = item && `${item.split(']')[1]}`
     return {
       time, words
     }
@@ -48,7 +48,7 @@ const onIndex = computed(() => {
 </script>
 
 <template>
-  <div class="w-full h-3/4 overflow-y-auto flex justify-center ">
+  <div class="w-full h-3/4 overflow-y-auto flex justify-center">
     <ul class="w-3/4">
       <li v-for="(lrc,index) in lyric" :key="lrc.time" class="text-center">
         {{ lrc.words }}
