@@ -20,6 +20,7 @@ export default function useDrag(el: TElement) {
       startY.value = e.touches[0].clientY
     })
     element?.addEventListener('touchmove', (e)=>{
+      e.stopPropagation()
       let X = e.touches[0].clientX - startX.value
       let Y = e.touches[0].clientY - startY.value
       if(isDrag.value) {
