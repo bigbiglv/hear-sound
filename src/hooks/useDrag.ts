@@ -5,27 +5,32 @@ import { ref, unref, onMounted } from 'vue'
 import type { Ref } from 'vue'
 type TElement = Ref<HTMLElement | null> | HTMLElement | null
 export default function useDrag(el: TElement) {
-  //两个轴的滑动距离
+  // 两个轴的滑动距离
   const x = ref(0)
   const y = ref(0)
-  //一开始点击的位置
+  // 一开始点击的位置
   const startX = ref(0)
   const startY = ref(0)
-  //touch的状态
+  // touch的状态
   const isDrag = ref(false)
   onMounted(() => {
     const element = unref(el)
     element?.addEventListener('touchstart', (e:TouchEvent)=>{
-      startX.value = e.touches[0].clientX
-      startY.value = e.touches[0].clientY
+      // 获取当前位置 
+      // clientX, clientY 分别为距离屏幕左边 上边的距离
+      // 减去上一次触摸的最后停止位置 x.value y.value第二次触摸的起始位置才能正确
+      startX.value = e.touches[0].clientX - x.value
+      startY.value = e.touches[0].clientY - y.value
     })
     element?.addEventListener('touchmove', (e)=>{
       e.stopPropagation()
+      // 移动的时候将最初点击的位置作为基准 当前位置减去最初的值就是移动的距离
       let X = e.touches[0].clientX - startX.value
       let Y = e.touches[0].clientY - startY.value
       if(isDrag.value) {
-        //超出当前元素的范围阻止默认事件会报错
-        if(e.cancelable) e.preventDefault() 
+        // 超出当前元素的范围阻止默认事件会报错
+        if(e.cancelable) e.preventDefault()
+        // 赋值给x y
         x.value = X
         y.value = Y
         return
@@ -36,8 +41,8 @@ export default function useDrag(el: TElement) {
       }
     })
     element?.addEventListener('touchend', ()=>{
-      startX.value = 0
-      startY.value = 0
+      // startX.value = 0
+      // startY.value = 0
       isDrag.value = false
     })
   })
