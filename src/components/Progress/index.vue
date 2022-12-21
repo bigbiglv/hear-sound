@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TMode } from '@/store/types';
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 type Props = {
   modelValue: number,
   max?: number,
@@ -31,10 +31,29 @@ const inputClass = computed(() => {
     return ''
   }
 })
+
+const percentStyle = computed(() => {
+  let result = (value.value / props.max) * 100
+  return `width: ${result ? result.toFixed(0) : 0}%`
+})
+
+const pointRef = ref<HTMLElement | null>(null)
 </script>
 
 <template>
   <div class="transform origin-center flex justify-center items-center" :class="inputClass">
     <input type="range" v-model="value" :max="props.max" :min="props.min">
+  </div>
+  <div class="relative h-4 px-2 leading-3">
+    <!-- 总长度 --> 
+    <div class="absolute bg-light-100 w-full h-2 left-0 top-1/2 transform -translate-y-1/2 leading-3"></div>
+    <!-- 已有长度 -->
+    <div class="absolute bg-red-500 h-2 left-0 top-1/2 transform -translate-y-1/2 leading-3" :style="percentStyle"></div>
+    <!-- 交互圆点 -->
+    <div 
+      class="absolute w-4 h-4 rounded-full left-0 transform -translate-x-1/2 bg-white shadow-md"
+      ref="pointRef"
+      >
+    </div>
   </div>
 </template>
