@@ -4,7 +4,12 @@
 import { ref, unref, onMounted } from 'vue'
 import type { Ref } from 'vue'
 type TElement = Ref<HTMLElement | null> | HTMLElement | null
-export default function useDrag(el: TElement) {
+type TOptions = {
+  touchstart?: (e?: Event) => void
+  touchmove?: (e?: Event) => void
+  touchend?: (e?: Event) => void
+}
+export default function useDrag(el: TElement, options?: TOptions) {
   // 两个轴的滑动距离
   const x = ref(0)
   const y = ref(0)
@@ -21,6 +26,7 @@ export default function useDrag(el: TElement) {
       // 减去上一次触摸的最后停止位置 x.value y.value第二次触摸的起始位置才能正确
       startX.value = e.touches[0].clientX - x.value
       startY.value = e.touches[0].clientY - y.value
+      options?.touchstart?.(e)
     })
     element?.addEventListener('touchmove', (e)=>{
       e.stopPropagation()
@@ -33,6 +39,7 @@ export default function useDrag(el: TElement) {
         // 赋值给x y
         x.value = X
         y.value = Y
+        options?.touchmove?.(e)
         return
       }
       //偏移量大于20才算滑动 事实上这里是先执行的
@@ -40,10 +47,11 @@ export default function useDrag(el: TElement) {
         isDrag.value = true
       }
     })
-    element?.addEventListener('touchend', ()=>{
+    element?.addEventListener('touchend', (e)=>{
       // startX.value = 0
       // startY.value = 0
       isDrag.value = false
+      options?.touchend?.(e)
     })
   })
 
