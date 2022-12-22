@@ -106,37 +106,34 @@ const hasStyle = computed(() => {
 })
 
 /**
+ * 取值小数位数按props.decimal处理
+ */
+function formatDecimal(num: number): number{
+  // 取整
+  if (props.decimal === 0) return parseInt(num.toString())
+  // 按 decimal取小数位数
+  if (props.decimal > 0) return parseFloat(num.toFixed(props.decimal))
+  // 默认是2
+  return parseFloat(num.toFixed(2))
+}
+
+/**
  * 圆点触摸的事件
  */
 // function onEnd() {
-//   let newValue = x.value
-//   if (newValue > contextWidth.value) newValue = contextWidth.value
-//   if (newValue < 0) newValue = 0
-//   let percent = newValue / contextWidth.value
-//   if (props.decimal === 0) {
-//     hasValue.value = parseInt((percent * props.max).toString())
-//   } else if (props.decimal > 0) {
-//     hasValue.value = parseFloat((percent * props.max).toFixed(props.decimal))
-//   } else {
-//     hasValue.value = parseFloat((percent * props.max).toFixed(2))
-//   }
+//   // 根据滑动距离占的百分比
+//   let percent = x.value / contextWidth.value
+//   // 小数位数处理
+//   hasValue.value = formatDecimal(percent * props.max)
 // }
 
 function onMove() {
   // 根据滑动距离占的百分比
   let percent = x.value / contextWidth.value
-  // 值是否为小数
-  if (props.decimal === 0){
-    // 取整
-    hasValue.value = parseInt((percent * props.max).toString())
-  }else if(props.decimal > 0){
-    // 取 decimal 位小数
-    hasValue.value = parseFloat((percent * props.max).toFixed(props.decimal))
-  }else{
-    // 默认 2 位
-    hasValue.value = parseFloat((percent * props.max).toFixed(2))
-  }
+  // 小数位数处理
+  hasValue.value = formatDecimal(percent * props.max)
 }
+
 </script>
 
 <template>
