@@ -34,18 +34,13 @@ const inputClass = computed(() => {
   }
 })
 
-// 已有距离 宽度style
-const hasStyle = computed(() => {
-  // return `width: ${hasValue.value}px`
-  return `width: ${hasPercent.value * 100}%`
-})
 
 /**
  * 圆点移动
  */
 const pointRef = ref<HTMLElement | null>(null)
 // 滑动的距离
-const { x } = useDrag(pointRef, { touchend: onEnd })
+const { x } = useDrag(pointRef, { touchend: onEnd, touchmove: onMove })
 // 外部父元素的宽度
 const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth } = useElementSize(contextRef)
@@ -56,39 +51,87 @@ const hasValue = computed(() => {
   if(x.value > contextWidth.value) return contextWidth.value
   return x.value
 })
+
 // const hasValue = computed({
 //   get(){
-//     return value.value
+//     console.log('get')
+//     // 限制props传递进来value值范围在 0~max
+//     if(value.value > props.max) return contextWidth.value
+//     if(value.value < 0) return 0
+//     // 根据传入数值在视图的占比 hasPercent来得到对应的值
+//     return hasPercent.value * contextWidth.value
 //   },
 //   set() {
-//     if (x.value < 0) {
-//       hasValue.value = 0
-//     }else if (x.value > contextWidth.value){
-//       hasValue.value = contextWidth.value
-//     }else{
-//       hasValue.value = x.value
-//     }
+//     console.log('set')
+//     // if (x.value < 0) {
+//     //   hasValue.value = 0
+//     // }else if (x.value > contextWidth.value){
+//     //   hasValue.value = contextWidth.value
+//     // }else{
+//     //   hasValue.value = x.value
+//     // }
     
 //   }
 // })
   
+
+
+/**
+ * 一个value单位 在视图中的百分比占比
+ */ 
+const percentTovalue = computed(() => {
+  return parseFloat((contextWidth.value / props.max).toFixed(2)) / contextWidth.value
+})
+
+/**
+ * 已有值的百分比
+ */
+const hasPercent = computed<number>(() => {
+  // 根据props传入的值 乘 一个value的百分比
+  let percent: number = value.value * percentTovalue.value
+  //限制百分比在 0 ~ 1
+  percent > 1 && (percent = 1)
+  percent < 0 && (percent = 0)
+  return percent
+})
+
+/**
+ * style
+ */
 // 交互圆点的left距离style
 const pointStyle = computed(() => {
   // return `left: ${hasValue.value}px`
   return `left: ${hasPercent.value * 100}%`
 })
-
-// 已有值得占比对应最大值得值
-const hasPercent = computed(() => {
-  return parseFloat((hasValue.value / contextWidth.value).toFixed(2)) 
+// 已有距离 宽度style
+const hasStyle = computed(() => {
+  // return `width: ${hasValue.value}px`
+  return `width: ${hasPercent.value * 100}%`
 })
 
-// 圆点结束触摸的事件
+/**
+ * 圆点结束触摸的事件
+ */
 function onEnd() {
-  let newValue = hasPercent.value * props.max
+  let newValue = x.value
+  if (x.value < 0) newValue = 0
+  if (x.value > contextWidth.value) newValue = contextWidth.value
+  console.log('圆点', newValue * percentTovalue.value, x.value)
   // 触摸停止设置props传递的value值
-  value.value = newValue
+  value.value = parseInt( (newValue * percentTovalue.value).toString())
+  // value.value = newValue * percentTovalue.value
+
 }
+
+function onMove() {
+  let newValue = x.value
+  if (x.value < 0) newValue = 0
+  if (x.value > contextWidth.value) newValue = contextWidth.value
+  console.log('圆点', newValue * percentTovalue.value, x.value)
+  // 触摸停止设置props传递的value值
+  value.value = newValue * percentTovalue.value
+}
+
 </script>
 
 <template>
@@ -112,7 +155,7 @@ function onEnd() {
       >
     </div>
   </div>
-  <p>
-    {{ hasPercent, max, hasPercent * max }}
-  </p>
+  <p>hasPercent = {{ hasPercent }}</p>
+  <p>'max' = {{  max }}</p>
+  <p>'hasPercent * max' = {{  hasPercent * max }}</p>
 </template>
