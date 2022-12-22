@@ -8,12 +8,14 @@ type Props = {
   max?: number,
   min?: number,
   position?: TMode
+  decimal?: number
 }
 const props = withDefaults(defineProps<Props>(), {
   modelValue: 0,
   max: 10,
   min: 0,
-  position: 'horizontal' // 默认横向水平
+  position: 'horizontal', // 默认横向水平
+  decimal: 2,  // 小数点位数
 })
 const emit = defineEmits(['update:modelValue'])
 // 通过 computed 来对props.modelValue进行双向绑定
@@ -42,7 +44,10 @@ const inputClass = computed(() => {
  */
 const pointRef = ref<HTMLElement | null>(null)
 // 滑动的距离
-const { x } = useDrag(pointRef, { touchend: onEnd, touchmove: onMove })
+const { x } = useDrag(pointRef, { 
+  // touchend: onEnd,
+  touchmove: onMove 
+})
 // 外部父元素的宽度
 const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth } = useElementSize(contextRef)
@@ -107,13 +112,19 @@ const hasStyle = computed(() => {
 /**
  * 圆点触摸的事件
  */
-function onEnd() {
-  let newValue = x.value
-  if (newValue > contextWidth.value) newValue = contextWidth.value
-  if (newValue < 0) newValue = 0
-  let percent = newValue / contextWidth.value
-  hasValue.value = percent * props.max
-}
+// function onEnd() {
+//   let newValue = x.value
+//   if (newValue > contextWidth.value) newValue = contextWidth.value
+//   if (newValue < 0) newValue = 0
+//   let percent = newValue / contextWidth.value
+//   if (props.decimal === 0) {
+//     hasValue.value = parseInt((percent * props.max).toString())
+//   } else if (props.decimal > 0) {
+//     hasValue.value = parseFloat((percent * props.max).toFixed(props.decimal))
+//   } else {
+//     hasValue.value = parseFloat((percent * props.max).toFixed(2))
+//   }
+// }
 
 function onMove() {
   // 根据滑动的距离来计算滑动距离对应的value值
@@ -121,7 +132,14 @@ function onMove() {
   if (newValue > contextWidth.value) newValue = contextWidth.value
   if (newValue < 0) newValue = 0
   let percent = newValue / contextWidth.value
-  hasValue.value = percent * props.max
+  // 值是否为小数
+  if (props.decimal === 0){
+    hasValue.value = parseInt((percent * props.max).toString())
+  }else if(props.decimal > 0){
+    hasValue.value = parseFloat((percent * props.max).toFixed(props.decimal))
+  }else{
+    hasValue.value = parseFloat((percent * props.max).toFixed(2))
+  }
 }
 </script>
 
