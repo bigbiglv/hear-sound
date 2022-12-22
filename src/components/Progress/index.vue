@@ -14,14 +14,14 @@ type Props = {
   modelValue: number,
   max?: number,
   min?: number,
-  position?: TMode
+  orient?: TMode
   decimal?: number
 }
 const props = withDefaults(defineProps<Props>(), {
   modelValue: 0,
   max: 10,
   min: 0,
-  position: 'horizontal', // 默认横向水平
+  orient: 'horizontal', // 默认横向水平
   decimal: 2,  // 小数点位数
 })
 const emit = defineEmits(['update:modelValue'])
@@ -39,9 +39,9 @@ const progress = computed({
     emit('update:modelValue', Number(val))
   }
 })
-// 通过传入的position来确定横向还是纵向
+// 通过传入的orient来确定横向还是纵向
 const inputClass = computed(() => {
-  if (props.position === 'vertical') {
+  if (props.orient === 'vertical') {
     return ' -rotate-90'
   }else{
     return ''
@@ -140,10 +140,7 @@ function onMove() {
 </script>
 
 <template>
-  <!-- <div class="transform origin-center flex justify-center items-center" :class="inputClass">
-    <input type="range" v-model="value" :max="props.max" :min="props.min">
-  </div> -->
-  
+  <input type="range" v-model="progress" :max="props.max" :min="props.min" hidden>
   <div class="relative w-36 mx-10 h-4 leading-3" ref="contextRef">
     <!-- 总长度 --> 
     <div
@@ -160,7 +157,6 @@ function onMove() {
       >
     </div>
   </div>
-  <p>hasPercent = {{ hasPercent }}</p>
-  <p>'max' = {{  max }}</p>
-  <p>'hasPercent * max' = {{  hasPercent * max }}</p>
+  <p>hasValue: {{ hasValue }}</p>
+  <p>progress: {{ progress }} </p>
 </template>
