@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TMode } from '@/store/types';
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import useDrag from '@/hooks/useDrag'
 type Props = {
@@ -16,12 +16,14 @@ const props = withDefaults(defineProps<Props>(), {
   position: 'horizontal' // 默认横向水平
 })
 const emit = defineEmits(['update:modelValue'])
-// 通过 computed 来双向绑定
+// 通过 computed 来对props.modelValue进行双向绑定
 const value = computed({
   get() {
     return props.modelValue
   },
   set(val) {
+    // 将值赋通过emit事件传递到组件外的 v-model改变modelValue
+    // 再通过 get() 改变 value的值
     emit('update:modelValue', Number(val))
   }
 })
@@ -46,33 +48,27 @@ const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth } = useElementSize(contextRef)
 
 // 根据滑动的距离来限制范围
-const hasValue = computed(() => {
-  if(x.value < 0) return 0
-  if(x.value > contextWidth.value) return contextWidth.value
-  return x.value
-})
-
-// const hasValue = computed({
-//   get(){
-//     console.log('get')
-//     // 限制props传递进来value值范围在 0~max
-//     if(value.value > props.max) return contextWidth.value
-//     if(value.value < 0) return 0
-//     // 根据传入数值在视图的占比 hasPercent来得到对应的值
-//     return hasPercent.value * contextWidth.value
-//   },
-//   set() {
-//     console.log('set')
-//     // if (x.value < 0) {
-//     //   hasValue.value = 0
-//     // }else if (x.value > contextWidth.value){
-//     //   hasValue.value = contextWidth.value
-//     // }else{
-//     //   hasValue.value = x.value
-//     // }
-    
-//   }
+// const hasValue = computed(() => {
+//   if(x.value < 0) return 0
+//   if(x.value > contextWidth.value) return contextWidth.value
+//   return x.value
 // })
+
+const hasValue = computed({
+  get(){
+    // 限制props传递进来value值范围在 0~max
+    if(value.value > props.max) return contextWidth.value
+    if(value.value < 0) return 0
+    let percent = value.value * percentTovalue.value
+    // 根据传入数值在视图的占比 hasPercent来得到对应的值
+    return percent * contextWidth.value
+  },
+  set(val) {
+    // 赋值给 value 把值和value绑定 value又和modelValue绑定
+    // hasValue => value => modelValue
+    value.value = val
+  }
+})
   
 
 
@@ -87,8 +83,7 @@ const percentTovalue = computed(() => {
  * 已有值的百分比
  */
 const hasPercent = computed<number>(() => {
-  // 根据props传入的值 乘 一个value的百分比
-  let percent: number = value.value * percentTovalue.value
+  let percent: number = hasValue.value / contextWidth.value
   //限制百分比在 0 ~ 1
   percent > 1 && (percent = 1)
   percent < 0 && (percent = 0)
@@ -110,28 +105,24 @@ const hasStyle = computed(() => {
 })
 
 /**
- * 圆点结束触摸的事件
+ * 圆点触摸的事件
  */
 function onEnd() {
   let newValue = x.value
-  if (x.value < 0) newValue = 0
-  if (x.value > contextWidth.value) newValue = contextWidth.value
-  console.log('圆点', newValue * percentTovalue.value, x.value)
-  // 触摸停止设置props传递的value值
-  value.value = parseInt( (newValue * percentTovalue.value).toString())
-  // value.value = newValue * percentTovalue.value
-
+  if (newValue > contextWidth.value) newValue = contextWidth.value
+  if (newValue < 0) newValue = 0
+  let percent = newValue / contextWidth.value
+  hasValue.value = percent * props.max
 }
 
 function onMove() {
+  // 根据滑动的距离来计算滑动距离对应的value值
   let newValue = x.value
-  if (x.value < 0) newValue = 0
-  if (x.value > contextWidth.value) newValue = contextWidth.value
-  console.log('圆点', newValue * percentTovalue.value, x.value)
-  // 触摸停止设置props传递的value值
-  value.value = newValue * percentTovalue.value
+  if (newValue > contextWidth.value) newValue = contextWidth.value
+  if (newValue < 0) newValue = 0
+  let percent = newValue / contextWidth.value
+  hasValue.value = percent * props.max
 }
-
 </script>
 
 <template>
