@@ -39,13 +39,55 @@ const progress = computed({
     emit('update:modelValue', Number(val))
   }
 })
-// 通过传入的orient来确定横向还是纵向
-const inputClass = computed(() => {
-  if (props.orient === 'vertical') {
-    return ' -rotate-90'
-  }else{
-    return ''
+/**
+ * class样式 通过props.orient来确定样式
+ */
+const orientClass = computed(() => {
+  const orient = {
+    horizontal: 'h-4 w-36',
+    vertical: 'h-36 w-4',
   }
+  return orient[props.orient]
+})
+const fullClass = computed(() => {
+  const orient = {
+    horizontal: 'w-full h-2 -translate-y-1/2 left-0 top-1/2',
+    vertical: 'w-2 h-full -translate-x-1/2 bottom-0 left-1/2',
+  }
+  return orient[props.orient]
+})
+const hasClass = computed(() => {
+  const orient = {
+    horizontal: 'h-2 -translate-y-1/2 left-0 top-1/2',
+    vertical: 'w-2 -translate-x-1/2 bottom-0 left-1/2',
+  }
+  return orient[props.orient]
+})
+const pointClass = computed(() => {
+  const orient = {
+    horizontal: 'left-0 -translate-x-1/2',
+    vertical: 'bottom translate-y-1/2',
+  }
+  return orient[props.orient]
+})
+/**
+ * style样式
+ */
+// 交互圆点的left距离style
+const pointStyle = computed(() => {
+  const orient = {
+    horizontal: `left: ${hasPercent.value * 100}%`,
+    vertical: `bottom: ${hasPercent.value * 100}%`,
+  }
+  return orient[props.orient]
+})
+// 已有距离 宽度style
+const hasStyle = computed(() => {
+  const orient = {
+    horizontal: `width: ${hasPercent.value * 100}%`,
+    vertical: `height: ${hasPercent.value * 100}%`,
+  }
+  return orient[props.orient]
 })
 
 
@@ -101,20 +143,6 @@ const hasPercent = computed<number>(() => {
 })
 
 /**
- * style
- */
-// 交互圆点的left距离style
-const pointStyle = computed(() => {
-  // return `left: ${hasValue.value}px`
-  return `left: ${hasPercent.value * 100}%`
-})
-// 已有距离 宽度style
-const hasStyle = computed(() => {
-  // return `width: ${hasValue.value}px`
-  return `width: ${hasPercent.value * 100}%`
-})
-
-/**
  * 取值小数位数按props.decimal处理
  */
 function formatDecimal(num: number): number{
@@ -155,17 +183,29 @@ function tabProgress(e: MouseEvent) {
 
 <template>
   <input type="range" v-model="progress" :max="props.max" :min="props.min" hidden>
-  <div class="relative w-36 m-2 h-4" ref="contextRef" @click.stop="tabProgress($event)">
+  <div
+    class="relative m-2"
+    :class="orientClass"
+    ref="contextRef"
+    @click.stop="tabProgress($event)"
+  >
     <!-- 总长度 --> 
     <div
-      class="absolute bg-light-100 w-full h-2 left-0 top-1/2 transform -translate-y-1/2 rounded-full"
+      class="absolute bg-light-100 transform rounded-full"
+      :class="fullClass"
     >
     </div>
     <!-- 已有长度 -->
-    <div class="absolute bg-red-500 h-2 left-0 top-1/2 transform -translate-y-1/2 rounded-full" :style="hasStyle"></div>
+    <div
+      class="absolute bg-red-500 transform rounded-full"
+      :class="hasClass"
+      :style="hasStyle"
+    >
+    </div>
     <!-- 交互圆点 -->
     <div 
-      class="absolute w-4 h-4 rounded-full left-0 transform -translate-x-1/2 bg-white shadow-md"
+      class="absolute w-4 h-4 rounded-full transform bg-white shadow-md"
+      :class="pointClass"
       :style="pointStyle"
       ref="pointRef"
       >
