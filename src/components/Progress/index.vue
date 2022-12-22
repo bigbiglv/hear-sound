@@ -1,3 +1,10 @@
+<!-- 
+  通过`v-model`双向绑定从组件外部传`props.modelValue`
+  `modelValue`双向绑定是通过`computed`的`get`和`set`传递给`progress`
+  `hasValue`: 是**实际**的滑动的距离
+              通过`computed`的`get`和`set`将数据同步到`progress`
+  `modelValue` => `progress` => `hasValue` => `progress` => `modelValue`
+ -->
 <script setup lang="ts">
 import { TMode } from '@/store/types';
 import { computed, ref } from 'vue'
@@ -78,14 +85,14 @@ const hasValue = computed({
 
 
 /**
- * 一个value单位 在视图中的百分比占比
+ * 一个progress单位 在视图中的百分比占比
  */ 
 const percentTovalue = computed(() => {
   return parseFloat((contextWidth.value / props.max).toFixed(2)) / contextWidth.value
 })
 
 /**
- * 已有值的百分比
+ * 已有值对应视图的百分比
  */
 const hasPercent = computed<number>(() => {
   let percent: number = hasValue.value / contextWidth.value
@@ -127,7 +134,7 @@ const hasStyle = computed(() => {
 // }
 
 function onMove() {
-  // 根据滑动的距离来计算滑动距离对应的value值
+  // 根据滑动的距离来计算滑动距离对应的progress值
   let newValue = x.value
   if (newValue > contextWidth.value) newValue = contextWidth.value
   if (newValue < 0) newValue = 0
