@@ -39,6 +39,6 @@ const volume = computed({
     class="fixed rounded-full transform bg-light-900 z-50 flex justify-center items-center" 
     :class="contextClass"
     >
-    <Progress v-model="volume" :position="storeApp.volumeMode" :max="100" :min="0" />
+    <Progress v-model="volume" :orient="storeApp.volumeMode" :max="100" :min="0" />
   </div>
 </template>
