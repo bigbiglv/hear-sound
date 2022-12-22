@@ -1,8 +1,8 @@
 <!-- 
   通过`v-model`双向绑定从组件外部传`props.modelValue`
   `modelValue`双向绑定是通过`computed`的`get`和`set`传递给`progress`
-  `hasValue`: 是**实际**的滑动的距离
-              通过`computed`的`get`和`set`将数据同步到`progress`
+  `hasValue`: 是**实际**的滑动的距离（视图中的大小）
+              通过`computed`的`get`和`set`将数据**转换**同步到`progress`
   `modelValue` => `progress` => `hasValue` => `progress` => `modelValue`
  -->
 <script setup lang="ts">
@@ -59,21 +59,16 @@ const { x } = useDrag(pointRef, {
 const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth } = useElementSize(contextRef)
 
-// 根据滑动的距离来限制范围
-// const hasValue = computed(() => {
-//   if(x.value < 0) return 0
-//   if(x.value > contextWidth.value) return contextWidth.value
-//   return x.value
-// })
-
+/**
+ * 已有值对应视图中的实际数值
+ */
 const hasValue = computed({
   get(){
     // 限制props传递进来progress值范围在 0~max
     if (progress.value > props.max) return contextWidth.value
     if (progress.value < 0) return 0
-    let percent = progress.value * percentTovalue.value
-    // 根据传入数值在视图的占比 hasPercent来得到对应的值
-    return percent * contextWidth.value
+    // 计算当前progressToView对应视图中的大小
+    return progressToView.value * progress.value
   },
   set(val) {
     // 赋值给 value 把值和value绑定 value又和modelValue绑定
@@ -81,14 +76,12 @@ const hasValue = computed({
     progress.value = val
   }
 })
-  
-
 
 /**
- * 一个progress单位 在视图中的百分比占比
- */ 
-const percentTovalue = computed(() => {
-  return parseFloat((contextWidth.value / props.max).toFixed(2)) / contextWidth.value
+ * 一个progress值在视图中对应的值
+ */
+const progressToView = computed(() => {
+  return contextWidth.value / props.max
 })
 
 /**
