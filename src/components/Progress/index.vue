@@ -54,10 +54,19 @@ const inputClass = computed(() => {
  */
 const pointRef = ref<HTMLElement | null>(null)
 // 滑动的距离
-const { x } = useDrag(pointRef, { 
+const { x, y } = useDrag(pointRef, { 
   // touchend: onEnd,
   touchmove: onMove 
 })
+// 根据方向 props.orient 来确定位移取x 还是 y
+const slideValue = computed(() => {
+  const orient = {
+    horizontal: x.value,
+    vertical: y.value,
+  }
+  return orient[props.orient]
+})
+
 // 外部父元素的宽度
 const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth } = useElementSize(contextRef)
@@ -122,14 +131,14 @@ function formatDecimal(num: number): number{
  */
 // function onEnd() {
 //   // 根据滑动距离占的百分比
-//   let percent = x.value / contextWidth.value
+//   let percent = slideValue.value / contextWidth.value
 //   // 小数位数处理
 //   hasValue.value = formatDecimal(percent * props.max)
 // }
 
 function onMove() {
   // 根据滑动距离占的百分比
-  let percent = x.value / contextWidth.value
+  let percent = slideValue.value / contextWidth.value
   // 小数位数处理
   hasValue.value = formatDecimal(percent * props.max)
 }
