@@ -28,11 +28,14 @@ const emit = defineEmits(['update:modelValue'])
 // 通过 computed 来对props.modelValue进行双向绑定
 const progress = computed({
   get() {
+    // 限制 modelValue 的范围在 0~max
+    if (props.modelValue > props.max) return props.max
+    if (props.modelValue < 0) return 0
     return props.modelValue
   },
   set(val) {
     // 将值赋通过emit事件传递到组件外的 v-model改变modelValue
-    // 再通过 get() 改变 value的值
+    // modelValue一改变就会通过 get() 改变 progress的值
     emit('update:modelValue', Number(val))
   }
 })
@@ -64,15 +67,12 @@ const { width: contextWidth } = useElementSize(contextRef)
  */
 const hasValue = computed({
   get(){
-    // 限制props传递进来progress值范围在 0~max
-    if (progress.value > props.max) return contextWidth.value
-    if (progress.value < 0) return 0
     // 计算当前progressToView对应视图中的大小
     return progressToView.value * progress.value
   },
   set(val) {
     // 赋值给 value 把值和value绑定 value又和modelValue绑定
-    // hasValue => value => modelValue
+    // hasValue => progress => modelValue
     progress.value = val
   }
 })
@@ -88,11 +88,7 @@ const progressToView = computed(() => {
  * 已有值对应视图的百分比
  */
 const hasPercent = computed<number>(() => {
-  let percent: number = hasValue.value / contextWidth.value
-  //限制百分比在 0 ~ 1
-  percent > 1 && (percent = 1)
-  percent < 0 && (percent = 0)
-  return percent
+  return hasValue.value / contextWidth.value
 })
 
 /**
@@ -127,17 +123,17 @@ const hasStyle = computed(() => {
 // }
 
 function onMove() {
-  // 根据滑动的距离来计算滑动距离对应的progress值
-  let newValue = x.value
-  if (newValue > contextWidth.value) newValue = contextWidth.value
-  if (newValue < 0) newValue = 0
-  let percent = newValue / contextWidth.value
+  // 根据滑动距离占的百分比
+  let percent = x.value / contextWidth.value
   // 值是否为小数
   if (props.decimal === 0){
+    // 取整
     hasValue.value = parseInt((percent * props.max).toString())
   }else if(props.decimal > 0){
+    // 取 decimal 位小数
     hasValue.value = parseFloat((percent * props.max).toFixed(props.decimal))
   }else{
+    // 默认 2 位
     hasValue.value = parseFloat((percent * props.max).toFixed(2))
   }
 }
