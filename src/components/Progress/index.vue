@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits(['update:modelValue'])
 // 通过 computed 来对props.modelValue进行双向绑定
-const value = computed({
+const progress = computed({
   get() {
     return props.modelValue
   },
@@ -61,17 +61,17 @@ const { width: contextWidth } = useElementSize(contextRef)
 
 const hasValue = computed({
   get(){
-    // 限制props传递进来value值范围在 0~max
-    if(value.value > props.max) return contextWidth.value
-    if(value.value < 0) return 0
-    let percent = value.value * percentTovalue.value
+    // 限制props传递进来progress值范围在 0~max
+    if (progress.value > props.max) return contextWidth.value
+    if (progress.value < 0) return 0
+    let percent = progress.value * percentTovalue.value
     // 根据传入数值在视图的占比 hasPercent来得到对应的值
     return percent * contextWidth.value
   },
   set(val) {
     // 赋值给 value 把值和value绑定 value又和modelValue绑定
     // hasValue => value => modelValue
-    value.value = val
+    progress.value = val
   }
 })
   
