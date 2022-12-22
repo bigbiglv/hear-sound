@@ -141,14 +141,14 @@ function onMove() {
 
 <template>
   <input type="range" v-model="progress" :max="props.max" :min="props.min" hidden>
-  <div class="relative w-36 mx-10 h-4 leading-3" ref="contextRef">
+  <div class="relative w-36 m-2 h-4" ref="contextRef">
     <!-- 总长度 --> 
     <div
-      class="absolute bg-light-100 w-full h-2 left-0 top-1/2 transform -translate-y-1/2 leading-3"
+      class="absolute bg-light-100 w-full h-2 left-0 top-1/2 transform -translate-y-1/2 rounded-full"
     >
     </div>
     <!-- 已有长度 -->
-    <div class="absolute bg-red-500 h-2 left-0 top-1/2 transform -translate-y-1/2 leading-3" :style="hasStyle"></div>
+    <div class="absolute bg-red-500 h-2 left-0 top-1/2 transform -translate-y-1/2 rounded-full" :style="hasStyle"></div>
     <!-- 交互圆点 -->
     <div 
       class="absolute w-4 h-4 rounded-full left-0 transform -translate-x-1/2 bg-white shadow-md"
