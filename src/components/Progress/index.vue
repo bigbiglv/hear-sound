@@ -134,11 +134,19 @@ function onMove() {
   hasValue.value = formatDecimal(percent * props.max)
 }
 
+/**
+ * 点击进度条
+ */
+function tabProgress(e: MouseEvent) {
+  let percent = e.clientX / contextWidth.value
+  // 小数位数处理
+  hasValue.value = formatDecimal(percent * props.max)
+}
 </script>
 
 <template>
   <input type="range" v-model="progress" :max="props.max" :min="props.min" hidden>
-  <div class="relative w-36 m-2 h-4" ref="contextRef">
+  <div class="relative w-36 m-2 h-4" ref="contextRef" @click.stop="tabProgress($event)">
     <!-- 总长度 --> 
     <div
       class="absolute bg-light-100 w-full h-2 left-0 top-1/2 transform -translate-y-1/2 rounded-full"
