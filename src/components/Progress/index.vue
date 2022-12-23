@@ -119,8 +119,11 @@ const hasValue = computed({
   set(val) {
     // 赋值给 value 把值和value绑定 value又和modelValue绑定
     // hasValue => progress => modelValue
-    console.log('set', val)
-    progress.value = val
+    // 将视图的值转成百分比再转成 props.modelValue
+    let percent = val / context.value
+    // 小数位数处理
+    const newValue = formatDecimal(percent * props.max)
+    progress.value = newValue
   }
 })
 
@@ -189,9 +192,7 @@ function changeProgress(e: TouchEvent) {
     // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
     vertical: context.value - (e.touches[0].clientY - (contextRef.value?.getBoundingClientRect().top || 0)),
   }
-  let percent = orient[props.orient] / context.value
-  // 小数位数处理
-  hasValue.value = formatDecimal(percent * props.max)
+  hasValue.value = orient[props.orient]
 }
 useDrag(contextRef, {
   touchstart: (e) => {
