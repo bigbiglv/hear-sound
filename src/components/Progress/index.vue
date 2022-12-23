@@ -9,7 +9,7 @@
  -->
 <script setup lang="ts">
 import { TMode } from '@/store/types';
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useElementSize, onKeyStroke, onClickOutside } from '@vueuse/core'
 import useDrag from '@/hooks/useDrag'
 type Props = {
@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
   orient: 'horizontal', // 默认横向水平
   decimal: 2,  // 小数点位数
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:drag'])
 // 通过 computed 来对props.modelValue进行双向绑定
 const progress = computed({
   get() {
@@ -194,13 +194,16 @@ function changeProgress(e: TouchEvent) {
   }
   hasValue.value = orient[props.orient]
 }
-useDrag(contextRef, {
+const { isDrag } = useDrag(contextRef, {
   touchstart: (e) => {
     changeProgress(e)
     // 焦点
     focused.value = true
   },
   touchmove: changeProgress,
+})
+watch(isDrag, () => {
+  emit('update:drag', isDrag.value)
 })
 // 点击外部取消焦点
 onClickOutside(contextRef, (event) => {
