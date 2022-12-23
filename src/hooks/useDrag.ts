@@ -5,9 +5,9 @@ import { ref, unref, onMounted } from 'vue'
 import type { Ref } from 'vue'
 type TElement = Ref<HTMLElement | null> | HTMLElement | null
 type TOptions = {
-  touchstart?: (e?: TouchEvent) => void
-  touchmove?: (e?: TouchEvent) => void
-  touchend?: (e?: TouchEvent) => void
+  touchstart?: (e: TouchEvent) => void
+  touchmove?: (e: TouchEvent) => void
+  touchend?: (e: TouchEvent) => void
 }
 export default function useDrag(el: TElement, options?: TOptions) {
   // 两个轴的滑动距离
