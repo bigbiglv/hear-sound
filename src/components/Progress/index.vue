@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { TMode } from '@/store/types';
 import { computed, ref } from 'vue'
-import { useElementSize } from '@vueuse/core'
+import { useElementSize, onKeyStroke, onClickOutside } from '@vueuse/core'
 import useDrag from '@/hooks/useDrag'
 type Props = {
   modelValue: number,
@@ -41,6 +41,7 @@ const progress = computed({
     emit('update:modelValue', Number(val))
   }
 })
+
 /**
  * class样式 通过props.orient来确定样式
  */
@@ -66,11 +67,14 @@ const hasClass = computed(() => {
   return orient[props.orient]
 })
 const pointClass = computed(() => {
+  // 方向样式
   const orient = {
     horizontal: 'left-0 -translate-x-1/2',
     vertical: 'bottom translate-y-1/2',
   }
-  return orient[props.orient]
+  // 焦点样式
+  const focusClass = focused.value ? 'shadow-md' : 'shadow'
+  return `${orient[props.orient]} ${focusClass}`
 })
 /**
  * style样式
@@ -97,8 +101,12 @@ const hasStyle = computed(() => {
  * 圆点移动
  */
 const pointRef = ref<HTMLElement | null>(null)
+const focused = ref<boolean>(false)
 // 滑动的距离
 const { x, y } = useDrag(pointRef, { 
+  touchstart: () => {
+    focused.value = true
+  },
   // touchend: onEnd,
   touchmove: onMove 
 })
@@ -120,6 +128,38 @@ function limitValue(num: number): number{
   if(num > context.value) return context.value
   return num
 }
+
+// 点击外部取消圆点焦点
+onClickOutside(pointRef, (event) => {
+  focused.value = false
+})
+
+/**
+ * 键盘监听
+ */
+function addValue(e: Event) {
+  if(!focused.value) return
+  e.preventDefault()
+  progress.value += 1
+}
+function pausedValue(e: Event) {
+  if (!focused.value) return
+  e.preventDefault()
+  progress.value -= 1
+}
+onKeyStroke(['w', 'W', 'ArrowUp'], (e: KeyboardEvent) => {
+  addValue(e)
+})
+onKeyStroke(['s', 'S', 'ArrowDown'], (e: KeyboardEvent) => {
+  pausedValue(e)
+})
+onKeyStroke(['a', 'A', 'ArrowLeft'], (e: KeyboardEvent) => {
+  pausedValue(e)
+})
+onKeyStroke(['d', 'D', 'ArrowRight'], (e: KeyboardEvent) => {
+  addValue(e)
+})
+
 
 // 外部父元素的宽高度
 const contextRef = ref<HTMLElement | null>(null)
@@ -204,6 +244,8 @@ function tabProgress(e: MouseEvent) {
   let percent = orient[props.orient] / context.value
   // 小数位数处理
   hasValue.value = formatDecimal(percent * props.max)
+  // 焦点
+  focused.value = true
 }
 </script>
 
@@ -230,7 +272,7 @@ function tabProgress(e: MouseEvent) {
     </div>
     <!-- 交互圆点 -->
     <div 
-      class="absolute w-4 h-4 rounded-full transform bg-white shadow-md"
+      class="absolute w-4 h-4 rounded-full transform bg-white"
       :class="pointClass"
       :style="pointStyle"
       ref="pointRef"
