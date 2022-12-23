@@ -26,6 +26,7 @@ export default function useDrag(el: TElement, options?: TOptions) {
       // 获取当前位置 
       // clientX, clientY 分别为距离屏幕左边 上边的距离
       // 减去上一次触摸的最后停止位置 x.value y.value第二次触摸的起始位置才能正确
+      // console.log(e)
       startX.value = e.touches[0].clientX - x.value
       startY.value = e.touches[0].clientY - y.value
       options?.touchstart?.(e)

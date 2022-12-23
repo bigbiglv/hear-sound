@@ -102,16 +102,35 @@ const { x, y } = useDrag(pointRef, {
 })
 // 根据方向 props.orient 来确定位移取x 还是 y
 const slideValue = computed(() => {
+  let X = limitValue(x.value)
+  let Y = limitValue(y.value)
+  console.log(144 - Y)
   const orient = {
-    horizontal: x.value,
-    vertical: y.value,
+    horizontal: X,
+    // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
+    vertical: context.value - Y,
+  }
+  // 限制数值在 0 ~ context外部父元素宽/高
+  return orient[props.orient]
+})
+// 限制数值在 0~context
+function limitValue(num: number): number{
+  if(num < 0 ) return 0
+  if(num > context.value) return context.value
+  return num
+}
+
+// 外部父元素的宽高度
+const contextRef = ref<HTMLElement | null>(null)
+const { width: contextWidth, height: contextHeight } = useElementSize(contextRef)
+// 根据组件 orient 判断使用 宽还是高
+const context = computed(() => {
+  const orient = {
+    horizontal: contextWidth.value,
+    vertical: contextHeight.value,
   }
   return orient[props.orient]
 })
-
-// 外部父元素的宽度
-const contextRef = ref<HTMLElement | null>(null)
-const { width: contextWidth } = useElementSize(contextRef)
 
 /**
  * 已有值对应视图中的实际数值
@@ -132,14 +151,14 @@ const hasValue = computed({
  * 一个progress值在视图中对应的值
  */
 const progressToView = computed(() => {
-  return contextWidth.value / props.max
+  return context.value / props.max
 })
 
 /**
  * 已有值对应视图的百分比
  */
 const hasPercent = computed<number>(() => {
-  return hasValue.value / contextWidth.value
+  return hasValue.value / context.value
 })
 
 /**
@@ -166,7 +185,7 @@ function formatDecimal(num: number): number{
 
 function onMove() {
   // 根据滑动距离占的百分比
-  let percent = slideValue.value / contextWidth.value
+  let percent = slideValue.value / context.value
   // 小数位数处理
   hasValue.value = formatDecimal(percent * props.max)
 }
@@ -175,7 +194,13 @@ function onMove() {
  * 点击进度条
  */
 function tabProgress(e: MouseEvent) {
-  let percent = e.clientX / contextWidth.value
+  const orient = {
+    // 减去父元素距离边界的距离 为当前位置相对父元素的距离
+    horizontal: e.clientX - (contextRef.value?.offsetLeft || 0),
+    // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
+    vertical: context.value - (e.clientY - (contextRef.value?.offsetTop || 0)),
+  }
+  let percent = orient[props.orient] / context.value
   // 小数位数处理
   hasValue.value = formatDecimal(percent * props.max)
 }
@@ -211,6 +236,4 @@ function tabProgress(e: MouseEvent) {
       >
     </div>
   </div>
-  <p>hasValue: {{ hasValue }}</p>
-  <p>progress: {{ progress }} </p>
 </template>
