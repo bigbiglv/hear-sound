@@ -106,7 +106,6 @@ const { x, y } = useDrag(pointRef, {
 const slideValue = computed(() => {
   let X = limitValue(x.value)
   let Y = limitValue(y.value)
-  console.log(144 - Y)
   const orient = {
     horizontal: X,
     // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
@@ -198,9 +197,9 @@ function onMove() {
 function tabProgress(e: MouseEvent) {
   const orient = {
     // 减去父元素距离边界的距离 为当前位置相对父元素的距离
-    horizontal: e.clientX - (contextRef.value?.offsetLeft || 0),
+    horizontal: e.clientX - (contextRef.value?.getBoundingClientRect().left || 0),
     // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
-    vertical: context.value - (e.clientY - (contextRef.value?.offsetTop || 0)),
+    vertical: context.value - (e.clientY - (contextRef.value?.getBoundingClientRect().top || 0)),
   }
   let percent = orient[props.orient] / context.value
   // 小数位数处理
