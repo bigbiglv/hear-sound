@@ -140,12 +140,12 @@ onClickOutside(pointRef, (event) => {
 function addValue(e: Event) {
   if(!focused.value) return
   e.preventDefault()
-  progress.value += 1
+  progress.value < props.max && (progress.value += 1)
 }
 function pausedValue(e: Event) {
   if (!focused.value) return
   e.preventDefault()
-  progress.value -= 1
+  progress.value > 0 && (progress.value -= 1)
 }
 onKeyStroke(['w', 'W', 'ArrowUp'], (e: KeyboardEvent) => {
   addValue(e)
