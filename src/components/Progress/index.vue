@@ -129,10 +129,7 @@ const focused = ref<boolean>(false)
 //   return num
 // }
 
-// 点击外部取消圆点焦点
-// onClickOutside(pointRef, (event) => {
-//   focused.value = false
-// })
+
 
 /**
  * 键盘监听
@@ -253,6 +250,10 @@ useDrag(contextRef, {
     focused.value = true
   },
   touchmove: changeProgress,
+})
+// 点击外部取消焦点
+onClickOutside(contextRef, (event) => {
+  focused.value = false
 })
 </script>
 
