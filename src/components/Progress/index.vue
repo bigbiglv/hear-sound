@@ -96,68 +96,6 @@ const hasStyle = computed(() => {
   return orient[props.orient]
 })
 
-
-/**
- * 圆点移动
- */
-// const pointRef = ref<HTMLElement | null>(null)
-const focused = ref<boolean>(false)
-// 滑动的距离
-// const { x, y } = useDrag(pointRef, { 
-//   touchstart: () => {
-//     focused.value = true
-//   },
-//   touchend: onEnd,
-//   touchmove: onMove 
-// })
-// 根据方向 props.orient 来确定位移取x 还是 y
-// const slideValue = computed(() => {
-//   let X = limitValue(x.value)
-//   let Y = limitValue(y.value)
-//   const orient = {
-//     horizontal: X,
-//     // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
-//     vertical: context.value - Y,
-//   }
-//   // 限制数值在 0 ~ context外部父元素宽/高
-//   return orient[props.orient]
-// })
-// 限制数值在 0~context
-// function limitValue(num: number): number{
-//   if(num < 0 ) return 0
-//   if(num > context.value) return context.value
-//   return num
-// }
-
-
-
-/**
- * 键盘监听
- */
-function addValue(e: Event) {
-  if(!focused.value) return
-  e.preventDefault()
-  progress.value < props.max && (progress.value += 1)
-}
-function pausedValue(e: Event) {
-  if (!focused.value) return
-  e.preventDefault()
-  progress.value > 0 && (progress.value -= 1)
-}
-onKeyStroke(['w', 'W', 'ArrowUp'], (e: KeyboardEvent) => {
-  addValue(e)
-})
-onKeyStroke(['s', 'S', 'ArrowDown'], (e: KeyboardEvent) => {
-  pausedValue(e)
-})
-onKeyStroke(['a', 'A', 'ArrowLeft'], (e: KeyboardEvent) => {
-  pausedValue(e)
-})
-onKeyStroke(['d', 'D', 'ArrowRight'], (e: KeyboardEvent) => {
-  addValue(e)
-})
-
-
 // 外部父元素的宽高度
 const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth, height: contextHeight } = useElementSize(contextRef)
@@ -212,22 +150,34 @@ function formatDecimal(num: number): number{
   return parseFloat(num.toFixed(2))
 }
 
-/**
- * 圆点触摸的事件
- */
-// function onEnd() {
-//   // 根据滑动距离占的百分比
-//   let percent = slideValue.value / contextWidth.value
-//   // 小数位数处理
-//   hasValue.value = formatDecimal(percent * props.max)
-// }
 
-// function onMove() {
-//   // 根据滑动距离占的百分比
-//   let percent = slideValue.value / context.value
-//   // 小数位数处理
-//   hasValue.value = formatDecimal(percent * props.max)
-// }
+// 焦点
+const focused = ref<boolean>(false)
+/**
+ * 键盘监听
+ */
+function addValue(e: Event) {
+  if (!focused.value) return
+  e.preventDefault()
+  progress.value < props.max && (progress.value += 1)
+}
+function pausedValue(e: Event) {
+  if (!focused.value) return
+  e.preventDefault()
+  progress.value > 0 && (progress.value -= 1)
+}
+onKeyStroke(['w', 'W', 'ArrowUp'], (e: KeyboardEvent) => {
+  addValue(e)
+})
+onKeyStroke(['s', 'S', 'ArrowDown'], (e: KeyboardEvent) => {
+  pausedValue(e)
+})
+onKeyStroke(['a', 'A', 'ArrowLeft'], (e: KeyboardEvent) => {
+  pausedValue(e)
+})
+onKeyStroke(['d', 'D', 'ArrowRight'], (e: KeyboardEvent) => {
+  addValue(e)
+})
 
 /**
  * 改变进度条进度
@@ -282,7 +232,6 @@ onClickOutside(contextRef, (event) => {
       class="absolute w-4 h-4 rounded-full transform bg-white"
       :class="pointClass"
       :style="pointStyle"
-      ref="pointRef"
       >
     </div>
   </div>
