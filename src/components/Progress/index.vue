@@ -4,6 +4,8 @@
   `hasValue`: 是**实际**的滑动的距离（视图中的大小）
               通过`computed`的`get`和`set`将数据**转换**同步到`progress`
   `modelValue` => `progress` => `hasValue` => `progress` => `modelValue`
+  垂直模式滑动距离的取值需要使用高度context减去y 因为默认是进度条顶部为0往下数值越大
+  所以当进度条底部为基准0时就要使用高度context减去取得反转后的数值
  -->
 <script setup lang="ts">
 import { TMode } from '@/store/types';
