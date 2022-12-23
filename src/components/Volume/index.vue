@@ -21,6 +21,18 @@ const contextClass = computed(() => {
   return `${modeClass} ${positionClass}`
 })
 const storeAudio = audioStore()
+// 监听弹窗是否打开
+const subscribe = storeApp.$subscribe((mutation, state) => {
+  if (state.volumeModal) {
+    setTimeout(() => {
+      storeApp.closeVolumeModal()
+    }, 2000)
+  }
+})
+const isDrag = ref<boolean>(false)
+function progressDrag(data: boolean){
+  isDrag.value = data
+}
 const volume = computed({
   get(){
     return storeAudio.volume
@@ -30,7 +42,6 @@ const volume = computed({
     storeAudio.setVolume(val)
   }
 })
-const test = ref(0)
 </script>
 
 <template>
@@ -39,6 +50,13 @@ const test = ref(0)
     class="fixed rounded-full transform bg-light-900 z-50 flex justify-center items-center" 
     :class="contextClass"
     >
-    <Progress v-model="volume" :orient="storeApp.volumeMode" :max="1" :min="0" />
+    <Progress
+      v-model="volume"
+      :orient="storeApp.volumeMode"
+      :max="1"
+      :min="0" 
+      @update:drag="progressDrag"
+    />
+
   </div>
 </template>

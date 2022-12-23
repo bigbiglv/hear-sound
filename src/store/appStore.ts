@@ -77,13 +77,7 @@ export default defineStore('app',{
           type: dynamics.spring,
           duration: 500,
           friction: 400,
-          complete: () => {
-            this.volumeModal = true
-            // 2s后关闭弹窗
-            setTimeout(() => {
-              this.volumeMode && this.closeVolumeModal()
-            }, 2000);
-          }
+          complete: () => this.volumeModal = true
         }
       )
     },
