@@ -11,6 +11,7 @@
 import { TMode } from '@/store/types';
 import { computed, ref, watch } from 'vue'
 import { useElementSize, onKeyStroke, onClickOutside } from '@vueuse/core'
+import { useStyle } from './style';
 import useDrag from '@/hooks/useDrag'
 type Props = {
   modelValue: number,
@@ -42,40 +43,8 @@ const progress = computed({
   }
 })
 
-/**
- * class样式 通过props.orient来确定样式
- */
-const orientClass = computed(() => {
-  const orient = {
-    horizontal: 'h-4 w-36',
-    vertical: 'h-36 w-4',
-  }
-  return orient[props.orient]
-})
-const fullClass = computed(() => {
-  const orient = {
-    horizontal: 'w-full h-2 -translate-y-1/2 left-0 top-1/2',
-    vertical: 'w-2 h-full -translate-x-1/2 bottom-0 left-1/2',
-  }
-  return orient[props.orient]
-})
-const hasClass = computed(() => {
-  const orient = {
-    horizontal: 'h-2 -translate-y-1/2 left-0 top-1/2',
-    vertical: 'w-2 -translate-x-1/2 bottom-0 left-1/2',
-  }
-  return orient[props.orient]
-})
-const pointClass = computed(() => {
-  // 方向样式
-  const orient = {
-    horizontal: 'left-0 -translate-x-1/2',
-    vertical: 'bottom translate-y-1/2',
-  }
-  // 焦点样式
-  const focusClass = focused.value ? 'shadow-md' : 'shadow'
-  return `${orient[props.orient]} ${focusClass}`
-})
+
+
 /**
  * style样式
  */
@@ -156,6 +125,12 @@ function formatDecimal(num: number): number{
 
 // 焦点
 const focused = ref<boolean>(false)
+
+/**
+ * 样式
+ */
+const { orientClass, fullClass, hasClass, pointClass } = useStyle(props.orient, focused)
+
 /**
  * 键盘监听
  */
