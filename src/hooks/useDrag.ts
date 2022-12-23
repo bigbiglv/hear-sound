@@ -32,7 +32,7 @@ export default function useDrag(el: TElement, options?: TOptions) {
       options?.touchstart?.(e)
     })
     element?.addEventListener('touchmove', (e)=>{
-      e.stopPropagation()
+      // e.stopPropagation()
       // 移动的时候将最初点击的位置作为基准 当前位置减去最初的值就是移动的距离
       let X = e.touches[0].clientX - startX.value
       let Y = e.touches[0].clientY - startY.value

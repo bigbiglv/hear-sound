@@ -100,39 +100,39 @@ const hasStyle = computed(() => {
 /**
  * 圆点移动
  */
-const pointRef = ref<HTMLElement | null>(null)
+// const pointRef = ref<HTMLElement | null>(null)
 const focused = ref<boolean>(false)
 // 滑动的距离
-const { x, y } = useDrag(pointRef, { 
-  touchstart: () => {
-    focused.value = true
-  },
-  // touchend: onEnd,
-  touchmove: onMove 
-})
+// const { x, y } = useDrag(pointRef, { 
+//   touchstart: () => {
+//     focused.value = true
+//   },
+//   touchend: onEnd,
+//   touchmove: onMove 
+// })
 // 根据方向 props.orient 来确定位移取x 还是 y
-const slideValue = computed(() => {
-  let X = limitValue(x.value)
-  let Y = limitValue(y.value)
-  const orient = {
-    horizontal: X,
-    // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
-    vertical: context.value - Y,
-  }
-  // 限制数值在 0 ~ context外部父元素宽/高
-  return orient[props.orient]
-})
+// const slideValue = computed(() => {
+//   let X = limitValue(x.value)
+//   let Y = limitValue(y.value)
+//   const orient = {
+//     horizontal: X,
+//     // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
+//     vertical: context.value - Y,
+//   }
+//   // 限制数值在 0 ~ context外部父元素宽/高
+//   return orient[props.orient]
+// })
 // 限制数值在 0~context
-function limitValue(num: number): number{
-  if(num < 0 ) return 0
-  if(num > context.value) return context.value
-  return num
-}
+// function limitValue(num: number): number{
+//   if(num < 0 ) return 0
+//   if(num > context.value) return context.value
+//   return num
+// }
 
 // 点击外部取消圆点焦点
-onClickOutside(pointRef, (event) => {
-  focused.value = false
-})
+// onClickOutside(pointRef, (event) => {
+//   focused.value = false
+// })
 
 /**
  * 键盘监听
@@ -184,6 +184,7 @@ const hasValue = computed({
   set(val) {
     // 赋值给 value 把值和value绑定 value又和modelValue绑定
     // hasValue => progress => modelValue
+    console.log('set', val)
     progress.value = val
   }
 })
@@ -224,22 +225,22 @@ function formatDecimal(num: number): number{
 //   hasValue.value = formatDecimal(percent * props.max)
 // }
 
-function onMove() {
-  // 根据滑动距离占的百分比
-  let percent = slideValue.value / context.value
-  // 小数位数处理
-  hasValue.value = formatDecimal(percent * props.max)
-}
+// function onMove() {
+//   // 根据滑动距离占的百分比
+//   let percent = slideValue.value / context.value
+//   // 小数位数处理
+//   hasValue.value = formatDecimal(percent * props.max)
+// }
 
 /**
  * 点击进度条
  */
-function tabProgress(e: MouseEvent) {
+function tabProgress(e: TouchEvent) {
   const orient = {
     // 减去父元素距离边界的距离 为当前位置相对父元素的距离
-    horizontal: e.clientX - (contextRef.value?.getBoundingClientRect().left || 0),
+    horizontal: e.touches[0].clientX - (contextRef.value?.getBoundingClientRect().left || 0),
     // 还需要使用 context 减去 因为进度条底部为0 如果是顶部为0就不用
-    vertical: context.value - (e.clientY - (contextRef.value?.getBoundingClientRect().top || 0)),
+    vertical: context.value - (e.touches[0].clientY - (contextRef.value?.getBoundingClientRect().top || 0)),
   }
   let percent = orient[props.orient] / context.value
   // 小数位数处理
@@ -247,6 +248,18 @@ function tabProgress(e: MouseEvent) {
   // 焦点
   focused.value = true
 }
+useDrag(contextRef, {
+  touchstart: (e) => {
+    tabProgress(e)
+  },
+  touchmove: (e) => {
+    let has = e.touches[0].clientX - (contextRef.value?.getBoundingClientRect().left || 0)
+    // // 根据滑动距离占的百分比
+    let percent = has / context.value
+    // // // 小数位数处理
+    hasValue.value = formatDecimal(percent * props.max)
+  }
+})
 </script>
 
 <template>
@@ -255,7 +268,6 @@ function tabProgress(e: MouseEvent) {
     class="relative m-2"
     :class="orientClass"
     ref="contextRef"
-    @click.stop="tabProgress($event)"
   >
     <!-- 总长度 --> 
     <div
