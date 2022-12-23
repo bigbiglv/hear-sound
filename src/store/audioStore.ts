@@ -129,7 +129,7 @@ export default defineStore('audio',{
     },
     /** 设置音量 */
     setVolume(volume: number) {
-      if(volume > 1 || volume < 1) return
+      if(volume > 1 || volume < 0) return
       this.mediaElement!.volume = volume
       this.volume = volume
     },
