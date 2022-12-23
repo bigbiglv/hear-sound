@@ -233,9 +233,9 @@ function formatDecimal(num: number): number{
 // }
 
 /**
- * 点击进度条
+ * 改变进度条进度
  */
-function tabProgress(e: TouchEvent) {
+function changeProgress(e: TouchEvent) {
   const orient = {
     // 减去父元素距离边界的距离 为当前位置相对父元素的距离
     horizontal: e.touches[0].clientX - (contextRef.value?.getBoundingClientRect().left || 0),
@@ -245,20 +245,14 @@ function tabProgress(e: TouchEvent) {
   let percent = orient[props.orient] / context.value
   // 小数位数处理
   hasValue.value = formatDecimal(percent * props.max)
-  // 焦点
-  focused.value = true
 }
 useDrag(contextRef, {
   touchstart: (e) => {
-    tabProgress(e)
+    changeProgress(e)
+    // 焦点
+    focused.value = true
   },
-  touchmove: (e) => {
-    let has = e.touches[0].clientX - (contextRef.value?.getBoundingClientRect().left || 0)
-    // // 根据滑动距离占的百分比
-    let percent = has / context.value
-    // // // 小数位数处理
-    hasValue.value = formatDecimal(percent * props.max)
-  }
+  touchmove: changeProgress,
 })
 </script>
 
