@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import Progress from '@/components/Progress/index.vue'
 import { storeToRefs } from 'pinia' 
 import appStore from '@/store/appStore'
@@ -23,14 +23,14 @@ const contextClass = computed(() => {
 const storeAudio = audioStore()
 const volume = computed({
   get(){
-    // 音量是 0-1 , 这里设置为 100 倍
-    return storeAudio.volume * 100 | 0
+    return storeAudio.volume
   },
   set(val){
     // 设置音量
-    storeAudio.setVolume(val / 100)
+    storeAudio.setVolume(val)
   }
 })
+const test = ref(0)
 </script>
 
 <template>
@@ -39,6 +39,6 @@ const volume = computed({
     class="fixed rounded-full transform bg-light-900 z-50 flex justify-center items-center" 
     :class="contextClass"
     >
-    <Progress v-model="volume" :orient="storeApp.volumeMode" :max="100" :min="0" />
+    <Progress v-model="volume" :orient="storeApp.volumeMode" :max="1" :min="0" />
   </div>
 </template>
