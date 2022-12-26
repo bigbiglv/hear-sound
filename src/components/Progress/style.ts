@@ -1,9 +1,10 @@
 /**
  * progress class和style 的调整
- */
+*/
+import { TMode } from '@/store/types';
 import { computed, unref } from "vue"
 import type { Ref } from 'vue'
-export function useStyle(orient: string | Ref<string>, focused: boolean | Ref<Boolean>, hasPercent?: number | Ref<number>){
+export function useStyle(orient: TMode | Ref<TMode>, focused: boolean | Ref<Boolean>, hasPercent?: number | Ref<number>){
   const newOrient = unref(orient)
   const newFocused = unref(focused)
   const newHasPercent = unref(hasPercent)
