@@ -21,7 +21,7 @@ onClickOutside(
 )
 
 // 滑动底部关闭
-const { y, isDrag } = useDrag(appModalRef)
+const { y, isDrag } = useDrag(appModalRef, false)
 const modalbottom = computed(() => {
   return `bottom: -${y.value}px`
 })

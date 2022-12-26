@@ -169,7 +169,7 @@ function changeProgress(e: TouchEvent) {
   }
   hasValue.value = orient[props.orient]
 }
-const { isDrag } = useDrag(contextRef, {
+const { isDrag } = useDrag(contextRef, true, {
   touchstart: (e) => {
     changeProgress(e)
     // 焦点
