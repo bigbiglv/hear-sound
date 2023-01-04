@@ -43,28 +43,6 @@ const progress = computed({
   }
 })
 
-
-
-/**
- * style样式
- */
-// 交互圆点的left距离style
-const pointStyle = computed(() => {
-  const orient = {
-    horizontal: `left: ${hasPercent.value * 100}%`,
-    vertical: `bottom: ${hasPercent.value * 100}%`,
-  }
-  return orient[props.orient]
-})
-// 已有距离 宽度style
-const hasStyle = computed(() => {
-  const orient = {
-    horizontal: `width: ${hasPercent.value * 100}%`,
-    vertical: `height: ${hasPercent.value * 100}%`,
-  }
-  return orient[props.orient]
-})
-
 // 外部父元素的宽高度
 const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth, height: contextHeight } = useElementSize(contextRef)
@@ -129,7 +107,7 @@ const focused = ref<boolean>(false)
 /**
  * 样式
  */
-const { orientClass, fullClass, hasClass, pointClass } = useStyle(props.orient, focused)
+const { orientClass, fullClass, hasClass, pointClass, pointStyle, hasStyle } = useStyle(props.orient, focused, hasPercent)
 
 /**
  * 键盘监听
