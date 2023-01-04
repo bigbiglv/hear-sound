@@ -10,8 +10,9 @@
 <script setup lang="ts">
 import { TMode } from '@/store/types';
 import { computed, ref, watch } from 'vue'
-import { useElementSize, onKeyStroke, onClickOutside } from '@vueuse/core'
-import { useStyle } from './style';
+import { useElementSize, onClickOutside } from '@vueuse/core'
+import { useStyle } from './style'
+import { useKeyStroke } from './keyStroke'
 import useDrag from '@/hooks/useDrag'
 type Props = {
   modelValue: number,
@@ -43,7 +44,7 @@ const progress = computed({
   }
 })
 
-// 外部父元素的宽高度
+// 外部父元素的宽或者高度 取决于进度条orient是横向还是竖向
 const contextRef = ref<HTMLElement | null>(null)
 const { width: contextWidth, height: contextHeight } = useElementSize(contextRef)
 // 根据组件 orient 判断使用 宽还是高
@@ -112,28 +113,7 @@ const { orientClass, fullClass, hasClass, pointClass, pointStyle, hasStyle } = u
 /**
  * 键盘监听
  */
-function addValue(e: Event) {
-  if (!focused.value) return
-  e.preventDefault()
-  progress.value < props.max && (progress.value += 1)
-}
-function pausedValue(e: Event) {
-  if (!focused.value) return
-  e.preventDefault()
-  progress.value > 0 && (progress.value -= 1)
-}
-onKeyStroke(['w', 'W', 'ArrowUp'], (e: KeyboardEvent) => {
-  addValue(e)
-})
-onKeyStroke(['s', 'S', 'ArrowDown'], (e: KeyboardEvent) => {
-  pausedValue(e)
-})
-onKeyStroke(['a', 'A', 'ArrowLeft'], (e: KeyboardEvent) => {
-  pausedValue(e)
-})
-onKeyStroke(['d', 'D', 'ArrowRight'], (e: KeyboardEvent) => {
-  addValue(e)
-})
+useKeyStroke(focused, progress, props.max)
 
 /**
  * 改变进度条进度
@@ -155,6 +135,7 @@ const { isDrag } = useDrag(contextRef, true, {
   },
   touchmove: changeProgress,
 })
+// 正在滑动
 watch(isDrag, () => {
   emit('update:drag', isDrag.value)
 })
