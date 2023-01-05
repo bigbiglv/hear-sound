@@ -8,30 +8,30 @@ export function useStyle(orient: TMode, focused: Ref<Boolean>, hasPercent: Ref<n
 
   const orientClass = computed(() => {
     const orientClass = {
-      horizontal: 'h-4 w-36',
-      vertical: 'h-36 w-4',
+      horizontal: 'h-2 w-36',
+      vertical: 'h-36 w-2',
     }
     return orientClass[orient]
   })
   const fullClass = computed(() => {
     const orientClass = {
-      horizontal: 'w-full h-2 -translate-y-1/2 left-0 top-1/2',
-      vertical: 'w-2 h-full -translate-x-1/2 bottom-0 left-1/2',
+      horizontal: 'w-full h-full left-0 top-0',
+      vertical: 'w-full h-full bottom-0 left-0',
     }
     return orientClass[orient]
   })
   const hasClass = computed(() => {
     const orientClass = {
-      horizontal: 'h-2 -translate-y-1/2 left-0 top-1/2',
-      vertical: 'w-2 -translate-x-1/2 bottom-0 left-1/2',
+      horizontal: 'h-full left-0 top-0',
+      vertical: 'w-full bottom-0 left-0',
     }
     return orientClass[orient]
   })
   const pointClass = computed(() => {
     // 方向样式
     const orientClass = {
-      horizontal: 'left-0 -translate-x-1/2',
-      vertical: 'bottom translate-y-1/2',
+      horizontal: 'left-0 -translate-x-1/2 top-1/2 -translate-y-1/2',
+      vertical: 'bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2',
     }
     // 焦点样式
     const focusClass = focused.value ? 'shadow-md' : 'shadow'
