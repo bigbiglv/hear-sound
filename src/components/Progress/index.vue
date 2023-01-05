@@ -151,6 +151,7 @@ onClickOutside(contextRef, (event) => {
     class="relative m-2"
     :class="orientClass"
     ref="contextRef"
+    v-bind="$attrs"
   >
     <!-- 总长度 --> 
     <div
