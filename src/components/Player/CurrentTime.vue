@@ -35,8 +35,8 @@ const progress = computed({
 </script>
 
 <template>
-  <div class="w-full">
-    <Progress :max="durationTime" :min="0" v-model="progress" />
+  <div class="w-full px-6 py-2 flex flex-col">
+    <Progress :max="durationTime" :min="0" v-model="progress" class="!w-11/12 place-self-center" />
     <div class="w-full flex justify-between items-center text-dark-50 text-xs">
       <span>{{ currentTimeFormat }}</span>
       <span>{{ durationTimeFormat }}</span>
