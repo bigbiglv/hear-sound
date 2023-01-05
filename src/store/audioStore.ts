@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import type { NLyric, NSearch, NSongUrl } from '@/api/neteasy/types'
-import { SongUrl, Lyric } from '@/api/neteasy/index';
+import type { NAlbum, NLyric, NSearch, NSongUrl } from '@/api/neteasy/types'
+import { SongUrl, Lyric, Album } from '@/api/neteasy/index';
 interface IState{
   audioContext: AudioContext | null,
   mediaElement: HTMLAudioElement | null,
@@ -19,6 +19,7 @@ interface IState{
   playList: Array<NSearch.ISongs>,
   playIndex: number,
   songUrl: string,
+  albumCover: string,
   level: NSongUrl.TLevel,
   lyric: { lrc: string | undefined, romalrc: string | undefined }
 }
@@ -44,6 +45,7 @@ export default defineStore('audio',{
     playList: [],   // 播放列表 歌曲信息
     playIndex: 0,   // 播放歌曲的下标
     songUrl: '',    // 当前播放歌曲的url
+    albumCover: '',  // 专辑封面
     level: 'standard',    // 码率
     lyric: {
       lrc: '',      // 普通歌词  
@@ -127,25 +129,35 @@ export default defineStore('audio',{
       this.audioContext = audioContext
       this.bufferLength = bufferLength
     },
-    /** 设置音量 */
+    /**
+     * 设置音量 
+     */
     setVolume(volume: number) {
       if(volume > 1 || volume < 0) return
       this.mediaElement!.volume = volume
       this.volume = volume
     },
-    /** 循环单曲 */
+    /**
+     * 循环单曲 
+     */
     setLoopSong(isLoop: boolean) {
       this.mediaElement!.loop = isLoop
     },
-    /** 设置静音 */
+    /**
+     * 设置静音 
+     */
     setMuted(muted: boolean) {
       this.mediaElement!.muted = muted
     },
-    /** 设置当前播放进度 */
+    /**
+     * 设置当前播放进度 
+     */
     setCurrentTime(currentTime: number) {
       this.mediaElement!.currentTime = currentTime
     },
-    /** 开始绘制声波图 */
+    /**
+     * 开始绘制声波图 
+     */
     draw(canvas: HTMLCanvasElement | null, fftSize: number = 512) {
       const ctx = canvas?.getContext('2d')
       const height = canvas?.height || 0
@@ -174,13 +186,17 @@ export default defineStore('audio',{
         canvasX += barWidth + 2
       }
     },
-    /** 停止绘制声波图 */
+    /**
+     * 停止绘制声波图 
+     */
     cancelDraw(time: number = 800) {
       setTimeout(() => {
         this.drawId && cancelAnimationFrame(this.drawId)
       }, time);
     },
-    /** 播放 */
+    /**
+     * 播放 
+     */
     play() {
       if(!this.playList.length) return
       return new Promise(async (res, rej) => {
@@ -206,7 +222,9 @@ export default defineStore('audio',{
         res('success')
       })
     },
-    /** 音量渐入渐出 */
+    /**
+     * 音量渐入渐出 
+     */
     setFade() {
       return new Promise<number>((resolve, reject) => {
         let start = () => {
@@ -235,7 +253,9 @@ export default defineStore('audio',{
         start()
       })
     },
-    /** 暂停 */
+    /**
+     * 暂停 
+     */
     async pause() {
       if (this.mediaElement?.paused) return 
       if (this.fadeVolume.isFade) {
@@ -246,7 +266,9 @@ export default defineStore('audio',{
       // 停止绘制
       this.cancelDraw?.()
     },
-    /** 获取播放url */
+    /**
+     * 获取播放url
+     */
     async getSongUrl(params: NSongUrl.TParams){
       const { data } = await SongUrl(params) || {}
       // 设置audio的src
@@ -257,36 +279,54 @@ export default defineStore('audio',{
         this.getLyric()
       }
     },
-    /** 根据 playSong 获取 songUrl */
+    /**
+     * 根据 playSong 获取 songUrl
+     */
     async getSongUrlforIndex() {
       if(!this.playList.length) return
-      const id = this.playSong?.id
-      if(!id) return
-      let params: NSongUrl.TParams = { 
-        id,
+      // 获取专辑信息
+      if (!this.playSong?.album.id) return
+      try {
+        await this.getAlbumInfo({
+          id: this.playSong?.album.id
+        })
+      } catch (error) {
+        // 专辑详情获取失败
+      }
+
+      // 获取播放链接
+      if (!this.playSong?.id) return
+      let SongUrlParams: NSongUrl.TParams = { 
+        id: this.playSong?.id,
         level: this.level,
       }
       try {
-        await this.getSongUrl(params)
+        await this.getSongUrl(SongUrlParams)
       } catch (error) {
         // getSongUrl获取url失败
       }
     },
-    /** 下一曲 */
+    /**
+     * 下一曲
+     */
     async next() {
       if(!this.playList.length) return
       this.playIndex === this.playList.length - 1 ? this.playIndex = 0 : this.playIndex++
       // 根据playIndex获取当前选中的歌曲
       this.getSongUrlforIndex()
     },
-    /** 上一曲 */
+    /**
+     * 上一曲
+     */
     prev() {
       if(!this.playList.length) return
       this.playIndex === 0 ? this.playIndex = this.playList.length - 1 : this.playIndex--
       // 根据playIndex获取当前选中的歌曲
       this.getSongUrlforIndex()
     },
-    /** 获取歌词 */
+    /** 
+     * 获取歌词 
+     */
     async getLyric() {
       let id = this.playSong?.id
       if(!id) return
@@ -301,6 +341,13 @@ export default defineStore('audio',{
         lrc: result?.lrc.lyric,
         romalrc: result?.romalrc?.lyric
       }
+    },
+    /** 
+     * 获取专辑信息
+     */
+    async getAlbumInfo(params: NAlbum.TParams){
+      const restlt = await Album(params) as any as NAlbum.TResData
+      this.albumCover = restlt.album.picUrl || ''
     },
     /** 
      * 插入单曲播放

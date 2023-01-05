@@ -1,5 +1,5 @@
 import axios from "@/utils/http/axios"
-import type { NSearch, NSongUrl, NLyric } from './types'
+import type { NSearch, NSongUrl, NLyric, NAlbum } from './types'
 axios.service.defaults.baseURL = '/api/netease'
 
 // 搜索
@@ -16,4 +16,9 @@ export const SongUrl = (params: NSongUrl.TParams) => {
 // 获取歌词
 export const Lyric = (params: NLyric.TParams) => {
   return axios.get<NLyric.TResData>('/lyric', params)
+}
+
+// 获取专辑信息 —— 封面
+export const Album = (params: NAlbum.TParams) => {
+  return axios.get<NAlbum.TResData>('/album', params)
 }

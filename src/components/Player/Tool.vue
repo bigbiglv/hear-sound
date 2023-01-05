@@ -58,7 +58,7 @@ const btnClass = computed(() => {
     @click="storeApp.setModal('occupy')"
   >
     <div class="w-10 h-10 flex-none mr-2 rounded-full overflow-hidden" v-show="isModalNormal">
-      <img src="" alt="封面">
+      <img :src="store.albumCover" alt="封面">
     </div>
     <div class="w-3/5 mr-2 text-dark-600 overflow-hidden" v-show="isModalNormal">
       <!-- 歌曲名 -->

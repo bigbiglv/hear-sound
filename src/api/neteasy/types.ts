@@ -36,7 +36,18 @@ export namespace NSearch {
     id: number
     name: string
     artists: IArtists[]
-    album: {}
+    album: {
+      alia: string[],
+      artist: {},
+      copyrightId: number
+      id: number
+      mark: number
+      name: string
+      picId: number
+      publishTime: number
+      size: number
+      status: number
+    }
     duration: number
     copyrightId: number
     status: number
@@ -272,5 +283,87 @@ export namespace NLyric {
       version: number,
       lyric: string 
     },
+  }
+}
+
+/** Album 接口的命名空间 */
+export namespace NAlbum {
+  /** 请求参数 */
+  export type TParams = {
+    id: number
+  }
+  /** 返回数据 */
+  export type TResData = {
+    songs:TSong[]
+    album: {
+      songs: []
+      paid: boolean
+      onSale: boolean
+      mark: number
+      awardTags: undefined
+      companyId: number
+      blurPicUrl: string
+      copyrightId: number
+      alias: string[]
+      artists: TArtist[]
+      picId: number
+      artist: TArtist
+      briefDesc: string
+      publishTime: number
+      company: string
+      picUrl: string
+      commentThreadId: string
+      pic: number
+      tags: string
+      status: number
+      subType: string
+      description: string
+      name: string
+      id: number
+      type: string
+      size: number
+      picId_str: number
+      info: {}
+    }
+  }
+
+  export type TSong = {
+    rtUrls: []
+    ar: [
+          {
+            id: number
+            name: string
+            alia: string[]
+          },
+          {
+            id: number
+            name: string
+          }
+        ]
+    al: {
+      id: 98418475
+      name: string
+      picUrl: string
+      pic_str: string
+      pic: number
+      alia: string[]
+    }
+  }
+  export type TArtist = {
+    img1v1Id: number
+    topicPerson: number
+    followed: boolean
+    musicSize: number
+    alias: []
+    picId: number
+    albumSize: number
+    briefDesc: string
+    picUrl: string
+    img1v1Url: string
+    trans: string
+    name: string
+    id: number
+    img1v1Id_str?: number
+    transNames?: string[]
   }
 }
