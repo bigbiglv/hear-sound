@@ -210,7 +210,7 @@ export default defineStore('audio',{
         // 用于有列表 首次触发播放事件
         if (!this.songUrl && this.playList.length) {
           // 根据playIndex获取当前选中的歌曲
-          await this.getSongUrlforIndex().catch(() => {
+          await this.getPlaySongInfo().catch(() => {
             rej('getSongUrl获取url失败')
           })
         }
@@ -280,9 +280,9 @@ export default defineStore('audio',{
       }
     },
     /**
-     * 根据 playSong 获取 songUrl
+     * 根据 playSong 获取 songUrl和专辑信息
      */
-    async getSongUrlforIndex() {
+    async getPlaySongInfo() {
       if(!this.playList.length) return
       // 获取专辑信息
       if (!this.playSong?.album.id) return
@@ -312,8 +312,8 @@ export default defineStore('audio',{
     async next() {
       if(!this.playList.length) return
       this.playIndex === this.playList.length - 1 ? this.playIndex = 0 : this.playIndex++
-      // 根据playIndex获取当前选中的歌曲
-      this.getSongUrlforIndex()
+      // 根据playSong获取当前选中的歌曲的信息
+      this.getPlaySongInfo()
     },
     /**
      * 上一曲
@@ -321,8 +321,8 @@ export default defineStore('audio',{
     prev() {
       if(!this.playList.length) return
       this.playIndex === 0 ? this.playIndex = this.playList.length - 1 : this.playIndex--
-      // 根据playIndex获取当前选中的歌曲
-      this.getSongUrlforIndex()
+      // 根据playSong获取当前选中的歌曲的信息
+      this.getPlaySongInfo()
     },
     /** 
      * 获取歌词 
@@ -363,7 +363,7 @@ export default defineStore('audio',{
       if (exist != -1) this.playList.splice(exist, 1)
       // 插入到当前播放位置的后面
       this.playList.splice(this.playIndex, 0, song)
-      await this.getSongUrlforIndex()
+      await this.getPlaySongInfo()
       isPlay && this.play()
     },
     /** 
