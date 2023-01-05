@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import Progress from '@/components/Progress/index.vue'
 import { storeToRefs } from 'pinia' 
 import appStore from '@/store/appStore'
@@ -21,18 +21,27 @@ const contextClass = computed(() => {
   return `${modeClass} ${positionClass}`
 })
 const storeAudio = audioStore()
-// 监听弹窗是否打开
-const subscribe = storeApp.$subscribe((mutation, state) => {
-  if (state.volumeModal) {
-    setTimeout(() => {
-      storeApp.closeVolumeModal()
-    }, 2000)
-  }
-})
 const isDrag = ref<boolean>(false)
 function progressDrag(data: boolean){
   isDrag.value = data
 }
+
+/**
+ * 弹窗关闭的时机
+ */
+let timer:NodeJS.Timeout
+watchEffect(() => {
+  if (isDrag.value && timer) {
+    // 正在滑动并且已经启动过一次定时器了就停止之前的定时器 取消关闭
+    clearTimeout(timer)
+  }
+  if (!isDrag.value && storeApp.volumeModal) {
+    timer = setTimeout(() => {
+      storeApp.closeVolumeModal()
+    }, 2000);
+  }
+})
+
 const volume = computed({
   get(){
     return storeAudio.volume
