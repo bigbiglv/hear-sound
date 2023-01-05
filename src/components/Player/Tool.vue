@@ -53,7 +53,7 @@ const btnClass = computed(() => {
 
 <template>
   <div
-    class="w-full h-16 px-4 absolute flex justify-between items-center box-border transition-all duration-300 z-10"
+    class="w-full h-56px px-4 absolute flex justify-between items-center box-border transition-all duration-300 z-10"
     :class="contentClass"
     @click="storeApp.setModal('occupy')"
   >
