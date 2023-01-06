@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import Cover from '@/components/Cover/index.vue'
 import audioStore from '@/store/audioStore'
 import appStore from '@/store/appStore'
 import { storeToRefs } from 'pinia'
@@ -57,8 +58,9 @@ const btnClass = computed(() => {
     :class="contentClass"
     @click="storeApp.setModal('occupy')"
   >
-    <div class="w-10 h-10 flex-none mr-2 rounded-full overflow-hidden" v-show="isModalNormal">
-      <img :src="store.albumCover" alt="封面">
+    <div class="mr-2 overflow-hidden" v-show="isModalNormal">
+      <!-- <img :src="store.albumCover" alt="封面"> -->
+      <Cover :radius="50" :padding="5" />
     </div>
     <div class="w-3/5 mr-2 text-dark-600 overflow-hidden" v-show="isModalNormal">
       <!-- 歌曲名 -->
