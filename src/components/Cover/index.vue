@@ -8,13 +8,15 @@ const { albumCover, analyser, isPlay } = storeToRefs(storeAudio)
 
 type Props = {
   radius: number,
-  padding: number
+  padding: number,
+  dynamic: boolean,
 }
 type TContext = CanvasRenderingContext2D | null | undefined
 
 const props = withDefaults(defineProps<Props>(), {
   radius: 80,
-  padding: 10
+  padding: 10,
+  dynamic: false,
 })
 
 // 图片宽高
@@ -70,17 +72,21 @@ watch(isPlay, () => {
 function draw() {
   if (!cover.value || !canvas.value) return
   const context = canvas.value.getContext('2d')
-  drawId.value = requestAnimationFrame(draw)
-  // 清除画布
-  context?.clearRect(0, 0, props.radius, props.radius)
-  // 绘制圆形动效
-  drawCircles(context) 
-  // 绘制图片
-  drawImage(context, cover.value)
-  // 获取外圈颜色
-  // getMainColor(context)
-
-  isDraw.value = true
+  // 是否绘制动效
+  if (props.dynamic) {
+    drawId.value = requestAnimationFrame(draw)
+    // 清除画布
+    context?.clearRect(0, 0, props.radius, props.radius)
+    // 绘制圆形动效
+    drawCircles(context) 
+    // 绘制图片
+    drawImage(context, cover.value)
+    // 获取外圈颜色
+    // getMainColor(context) 
+    isDraw.value = true
+  } else {
+    drawImage(context, cover.value)
+  }
 }
 /**
  * 绘制外围圆圈动效
