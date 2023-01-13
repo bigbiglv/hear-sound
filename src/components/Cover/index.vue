@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import audioStore from '@/store/audioStore'
-import dayjs from 'dayjs'
 import { storeToRefs } from 'pinia'
-const { albumCover, analyser } = storeToRefs(audioStore())
+const storeAudio = audioStore()
+const { albumCover, analyser, isPlay } = storeToRefs(storeAudio)
 
 type Props = {
   radius: number,
   padding: number
 }
+type TContext = CanvasRenderingContext2D | null | undefined
+type TCover = HTMLImageElement | null
+
 const props = withDefaults(defineProps<Props>(), {
   radius: 80,
   padding: 10
@@ -19,20 +22,6 @@ const imgRadius = computed(() => {
   return props.radius - props.padding * 2
 })
 const canvas = ref<HTMLCanvasElement | null>(null)
-// onMounted(() => {
-//   createCover()
-// })
-
-audioStore().$subscribe((mutation, state) => {
-  if (state.albumCover) createCover()
-  if (state.isPlay){
-    // 重新开始绘制
-    isDraw.value && draw(cover) 
-  }else{
-    // 停止绘制
-    cancelDraw(drawId.value)
-  }
-})
 
 const bufferLength = computed(() => {
   return analyser.value!.frequencyBinCount
@@ -43,38 +32,61 @@ const isDraw = ref(false)
 /**
  * 初始化图片
  */
-let cover: HTMLImageElement
+const cover = ref<HTMLImageElement | null>(null)
 function createCover(){
-  if (!albumCover.value) return
-  cover = new Image(imgRadius.value, imgRadius.value)
-  cover.src = `${albumCover.value}?${dayjs().unix()}`
+  if (!albumCover.value || drawId.value) return
+  cover.value = new Image(imgRadius.value, imgRadius.value)
+  cover.value.src = `${albumCover.value}`
   // 允许图片跨域
-  cover.setAttribute('crossOrigin', '');
-  cover.onload = () => {
-    // 开始绘制
-    draw(cover)
-  }
+  cover.value.setAttribute('crossOrigin', '');
+  cover.value?.addEventListener('load', () => {
+    // 图片加载完成开始绘制canvas
+    draw(cover.value)
+  })
+  
 }
 const drawId = ref<number | null>(null)
+
+// 监听图片链接来初始化绘制
+watch(albumCover, () => {
+  if (albumCover.value){
+    createCover()
+  }
+})
+// 监听播放状态改变绘制状态
+watch(isPlay, () => {
+  if (isPlay.value && drawId.value) {
+    // 重新开始绘制
+    draw(cover.value)
+  }
+  if (!isPlay.value) {
+    // 停止绘制
+    cancelDraw(drawId.value)
+  }
+})
 /**
  * 绘制
  */
-function draw(cover: HTMLImageElement) {
+function draw(cover: HTMLImageElement | null) {
   const context = canvas.value?.getContext('2d')
   drawId.value = requestAnimationFrame(() => draw(cover))
   // 清除画布
   context?.clearRect(0, 0, props.radius, props.radius)
+
   // 绘制圆形动效
-  drawCircles(context, cover)
+  drawCircles(context)
   // 绘制图片
   drawImage(context, cover)
+  // 获取外圈颜色
+  getMainColor(context)
 
   isDraw.value = true
 }
 /**
  * 绘制外围圆圈动效
  */
-function drawCircles(context: CanvasRenderingContext2D | null | undefined, cover: HTMLImageElement){
+function drawCircles(context: TContext){
+  // console.log('绘制外围圆圈动效')
   analyser.value!.fftSize = 32
   const dataArray = new Uint8Array(bufferLength.value)
   analyser.value?.getByteFrequencyData(dataArray)
@@ -89,7 +101,8 @@ function drawCircles(context: CanvasRenderingContext2D | null | undefined, cover
     let p = dataArray[i] / 255
     let m = Math.round(p * props.padding)
     context?.arc(...circleCenter, radius + m, 0, 2 * Math.PI)
-    context!.strokeStyle = getMainColor(context) ||'#000'
+    context!.strokeStyle = mainColor.value
+    // context!.strokeStyle = '#000'
     context!.filter = 'blur(1px)'
     context!.globalAlpha  = 0.5
   }
@@ -99,7 +112,8 @@ function drawCircles(context: CanvasRenderingContext2D | null | undefined, cover
 /**
  * 绘制图片并裁剪
  */
-function drawImage(context: CanvasRenderingContext2D | null | undefined, cover: HTMLImageElement) {
+function drawImage(context: TContext, cover: TCover) {
+  // console.log('绘制图片并裁剪')
   context?.save()
   // 画一个圆形裁剪
   context?.beginPath();
@@ -109,36 +123,53 @@ function drawImage(context: CanvasRenderingContext2D | null | undefined, cover: 
   context?.arc(...circleCenter, radius, 0, 2 * Math.PI)
   context?.clip()
   // 在裁剪的范围内显示图片
-  context?.drawImage(cover, props.padding, props.padding, imgRadius.value, imgRadius.value)
-  // mainColor.value = getMainColor(context)
+  cover && context?.drawImage(cover, props.padding, props.padding, imgRadius.value, imgRadius.value)
   context?.restore()
 }
 /**
  * 图片的主色调
  */
-function getMainColor(context: CanvasRenderingContext2D | null | undefined) {
+const mainColor = ref('#f0f')
+function getMainColor(context: TContext) {
+  console.log('图片的主色调')
   const data = context?.getImageData(props.padding, props.padding, imgRadius.value, imgRadius.value).data
-  let r = 0
-  let g = 0
-  let b = 0
-  // 取所有像素的平均值
-  for (let row = 0; row < imgRadius.value; row++) {
-    for (let col = 0; col < imgRadius.value; col++) {
-      r += data ? data[(imgRadius.value * row + col) * 4] : 0
-      g += data ? data[(imgRadius.value * row + col) * 4 + 1] : 0
-      b += data ? data[(imgRadius.value * row + col) * 4 + 2] : 0
-    }
+  if (!data) return
+  const colorList: { [key: string]: number } = {}
+  let i = 0;
+  while (i < data.length) {
+    // 数据排列是 r g b a r g b a 四个一组的顺序
+    const r: number = data[i];
+    const g: number = data[i + 1];
+    const b: number = data[i + 2];
+    const a: number = data[i + 3];
+    i = i + 4; // 最后 +4 比每次 i++ 快 10ms 左右性能
+    const key = [r, g, b, a].join(',')
+    key in colorList ? ++colorList[key] : (colorList[key] = 1)
   }
-  // 求取平均值
-  r /= imgRadius.value * imgRadius.value
-  g /= imgRadius.value * imgRadius.value
-  b /= imgRadius.value * imgRadius.value
+  let arr = [];
+  for (let key in colorList) {
+    arr.push({
+      rgba: `rgba(${key})`,
+      num: colorList[key]
+    })
+  }
+  arr = arr.sort((a, b) => b.num - a.num)
+  mainColor.value = rgbToString(arr[0].rgba)
+}
 
-  // 将最终的值取整
-  r = Math.round(r)
-  g = Math.round(g)
-  b = Math.round(b)
-  return `rgb(${r},${g},${b})`
+//rgb转16进制
+function rgbToString(str: string) {
+  let result = ''
+  if (str.indexOf("#") === 0) {
+    result = str
+  } else if (str.indexOf("rgb(") === 0) {
+    const colors = str.replace(/rgb\(/g, "").replace(/\)/g, "").split(",")
+    const r = parseInt(colors[0]).toString(16).length === 1 ? "0" + parseInt(colors[0]).toString(16) : parseInt(colors[0]).toString(16)
+    const g = parseInt(colors[1]).toString(16).length === 1 ? "0" + parseInt(colors[1]).toString(16) : parseInt(colors[1]).toString(16)
+    const b = parseInt(colors[2]).toString(16).length === 1 ? "0" + parseInt(colors[2]).toString(16) : parseInt(colors[2]).toString(16)
+    result = `#${r}${g}${b}`
+  }
+  return result
 }
 
 /**
