@@ -60,7 +60,7 @@ watch(isPlay, () => {
   }
   if (!isPlay.value && isDraw.value) {
     // 停止绘制
-    cancelDraw(drawId.value)
+    cancelDraw()
   }
 })
 /**
@@ -174,11 +174,10 @@ function rgbToString(str: string) {
 /**
  * 停止绘制
  */
-function cancelDraw(drawId: number | null) {
-  drawId && cancelAnimationFrame(drawId)
-  isDraw.value = false
+function cancelDraw() {
   setTimeout(() => {
-    console.log('停止绘制', isDraw.value)
+    drawId.value && cancelAnimationFrame(drawId.value)
+    isDraw.value = false
   }, 800);
 }
 </script>
