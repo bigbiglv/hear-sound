@@ -10,7 +10,6 @@ type Props = {
   padding: number
 }
 type TContext = CanvasRenderingContext2D | null | undefined
-type TCover = HTMLImageElement | null
 
 const props = withDefaults(defineProps<Props>(), {
   radius: 80,
@@ -24,7 +23,7 @@ const imgRadius = computed(() => {
 const canvas = ref<HTMLCanvasElement | null>(null)
 
 const bufferLength = computed(() => {
-  return analyser.value!.frequencyBinCount
+  return analyser.value?.frequencyBinCount || 0
 })
 
 // 是否正在绘制
@@ -41,7 +40,7 @@ function createCover(){
   cover.value.setAttribute('crossOrigin', '');
   cover.value?.addEventListener('load', () => {
     // 图片加载完成开始绘制canvas
-    draw(cover.value)
+    draw()
   })
   
 }
@@ -55,11 +54,11 @@ watch(albumCover, () => {
 })
 // 监听播放状态改变绘制状态
 watch(isPlay, () => {
-  if (isPlay.value && drawId.value) {
+  if (isPlay.value && !isDraw.value && drawId.value) {
     // 重新开始绘制
-    draw(cover.value)
+    draw()
   }
-  if (!isPlay.value) {
+  if (!isPlay.value && isDraw.value) {
     // 停止绘制
     cancelDraw(drawId.value)
   }
@@ -67,18 +66,18 @@ watch(isPlay, () => {
 /**
  * 绘制
  */
-function draw(cover: HTMLImageElement | null) {
-  const context = canvas.value?.getContext('2d')
-  drawId.value = requestAnimationFrame(() => draw(cover))
+function draw() {
+  if (!cover.value || !canvas.value) return
+  const context = canvas.value.getContext('2d')
+  drawId.value = requestAnimationFrame(draw)
   // 清除画布
   context?.clearRect(0, 0, props.radius, props.radius)
-
   // 绘制圆形动效
-  drawCircles(context)
+  drawCircles(context) 
   // 绘制图片
-  drawImage(context, cover)
+  drawImage(context, cover.value)
   // 获取外圈颜色
-  getMainColor(context)
+  // getMainColor(context)
 
   isDraw.value = true
 }
@@ -112,7 +111,7 @@ function drawCircles(context: TContext){
 /**
  * 绘制图片并裁剪
  */
-function drawImage(context: TContext, cover: TCover) {
+function drawImage(context: TContext, cover: HTMLImageElement) {
   // console.log('绘制图片并裁剪')
   context?.save()
   // 画一个圆形裁剪
@@ -123,7 +122,7 @@ function drawImage(context: TContext, cover: TCover) {
   context?.arc(...circleCenter, radius, 0, 2 * Math.PI)
   context?.clip()
   // 在裁剪的范围内显示图片
-  cover && context?.drawImage(cover, props.padding, props.padding, imgRadius.value, imgRadius.value)
+  context?.drawImage(cover, props.padding, props.padding, imgRadius.value, imgRadius.value)
   context?.restore()
 }
 /**
@@ -176,8 +175,10 @@ function rgbToString(str: string) {
  * 停止绘制
  */
 function cancelDraw(drawId: number | null) {
+  drawId && cancelAnimationFrame(drawId)
+  isDraw.value = false
   setTimeout(() => {
-    drawId && cancelAnimationFrame(drawId)
+    console.log('停止绘制', isDraw.value)
   }, 800);
 }
 </script>
