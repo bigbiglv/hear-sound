@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import audioStore from '@/store/audioStore'
 import { storeToRefs } from 'pinia'
+import { rgbToHex } from '@/utils/index'
 const storeAudio = audioStore()
 const { albumCover, analyser, isPlay } = storeToRefs(storeAudio)
 
@@ -153,22 +154,7 @@ function getMainColor(context: TContext) {
     })
   }
   arr = arr.sort((a, b) => b.num - a.num)
-  mainColor.value = rgbToString(arr[0].rgba)
-}
-
-//rgb转16进制
-function rgbToString(str: string) {
-  let result = ''
-  if (str.indexOf("#") === 0) {
-    result = str
-  } else if (str.indexOf("rgb(") === 0) {
-    const colors = str.replace(/rgb\(/g, "").replace(/\)/g, "").split(",")
-    const r = parseInt(colors[0]).toString(16).length === 1 ? "0" + parseInt(colors[0]).toString(16) : parseInt(colors[0]).toString(16)
-    const g = parseInt(colors[1]).toString(16).length === 1 ? "0" + parseInt(colors[1]).toString(16) : parseInt(colors[1]).toString(16)
-    const b = parseInt(colors[2]).toString(16).length === 1 ? "0" + parseInt(colors[2]).toString(16) : parseInt(colors[2]).toString(16)
-    result = `#${r}${g}${b}`
-  }
-  return result
+  mainColor.value = rgbToHex(arr[0].rgba)
 }
 
 /**
